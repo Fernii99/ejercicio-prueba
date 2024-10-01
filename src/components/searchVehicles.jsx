@@ -55,10 +55,11 @@ export const SearchVehicles = () => {
             searchResult.map( car => 
                 <div key={car.model} className="card">
                   <h4> { car.brand }</h4>
-                  <img src={`../public/images/${car.image}`} alt="car image" width="50" height="50" />
+                  <img src={car.image} alt="car image" width="50" height="50" />
                   <span> { car.model }</span>
                   <span> { car.type }</span>
                   <span> { car.color }</span>
+                  <span> { car.manufacturingYear }</span>
                 </div>
             )
           :

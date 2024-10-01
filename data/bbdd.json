@@ -1,7 +1,7 @@
 [
     {
       "brand": "Ford",
-      "image": "fordTourneo.jpg",
+      "image": "../public/images/fordTourneo.jpg",
       "model": "Tourneo",
       "type": "Sedan",
       "color": "black",
@@ -10,7 +10,7 @@
     {
       "brand": "Mercedes",
       "model": "GLA 200",
-      "image": "mercedesGLA200.jpg",
+      "image": "../public/images/mercedesGLA200.jpg",
       "type": "Coupe",
       "color": "gray",
       "manufacturingYear": "2021"
@@ -18,7 +18,7 @@
     {
       "brand": "Fiat",
       "model": "500",
-      "image": "fiat500.jpg",
+      "image": "../public/images/fiat500.jpg",
       "type": "Monovolumen",
       "color": "green",
       "manufacturingYear": "2020"
@@ -26,7 +26,7 @@
     {
       "brand": "Kia",
       "model": "sorento",
-      "image": "kiaSorento.jpg",
+      "image": "../public/images/kiaSorento.jpg",
       "type": "Suv",
       "color": "red",
       "manufacturingYear": "2024"
@@ -34,7 +34,7 @@
     {
       "brand": "Hyundai",
       "model": "i20",
-      "image": "hyundaiI20.jpg",
+      "image": "../public/images/hyundaiI20.jpg",
       "type": "Urban",
       "color": "gray",
       "manufacturingYear": "2023"
@@ -42,7 +42,7 @@
     {
       "brand": "Porsche",
       "model": "911",
-      "image": "porsche911.jpg",
+      "image": "../public/images/porsche911.jpg",
       "type": "Coupe",
       "color": "gray",
       "manufacturingYear": "2021"
@@ -50,7 +50,7 @@
     {
       "brand": "Subaru",
       "model": "impreza",
-      "image": "subaruImpreza.jpg",
+      "image": "../public/images/subaruImpreza.jpg",
       "type": "Family",
       "color": "black",
       "manufacturingYear": "2022"
@@ -58,7 +58,7 @@
     {
       "brand": "Renault",
       "model": "Captur",
-      "image": "renaultCaptur.jpg",
+      "image": "../public/images/renaultCaptur.jpg",
       "type": "Suv",
       "color": "gray",
       "manufacturingYear": "2023"
@@ -66,7 +66,7 @@
     {
       "brand": "Peugeot",
       "model": "3008",
-      "image": "peugeot3008.jpg",
+      "image": "../public/images/peugeot3008.jpg",
       "type": "Suv",
       "color": "blue",
       "manufacturingYear": "2023"

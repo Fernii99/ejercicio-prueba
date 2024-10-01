@@ -34,11 +34,7 @@ export const SearchVehicleHook = () => {
   };
 
   const handleSubmit = (e, { brand, model, type, color, manufacturingYear} = formData) => {
-    console.log("filter started")
-    console.log(formData)
     const filtered = bbdd.filter( car => car.brand.toLowerCase() === brand.toLowerCase() && car.model.toLowerCase() === model.toLowerCase() )
-
-    console.log(filtered)
     setSearchResult(filtered)
 
     e.preventDefault();

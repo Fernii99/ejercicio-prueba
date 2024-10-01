@@ -38,7 +38,7 @@ export const AddVehicles = () => {
         if (file) {
             setNewVehicle((prev) => ({
                 ...prev,
-                image: URL.createObjectURL(file),
+                image: `../public/images/${newVehicle.brand}${newVehicle.model}.jpg`,
             }));
         }
 };
