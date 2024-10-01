@@ -1,0 +1,74 @@
+[
+    {
+      "brand": "Ford",
+      "image": "fordTourneo.jpg",
+      "model": "Tourneo",
+      "type": "Sedan",
+      "color": "black",
+      "manufacturingYear": "2020"
+    },
+    {
+      "brand": "Mercedes",
+      "model": "GLA 200",
+      "image": "mercedesGLA200.jpg",
+      "type": "Coupe",
+      "color": "gray",
+      "manufacturingYear": "2021"
+    },
+    {
+      "brand": "Fiat",
+      "model": "500",
+      "image": "fiat500.jpg",
+      "type": "Monovolumen",
+      "color": "green",
+      "manufacturingYear": "2020"
+    },
+    {
+      "brand": "Kia",
+      "model": "sorento",
+      "image": "kiaSorento.jpg",
+      "type": "Suv",
+      "color": "red",
+      "manufacturingYear": "2024"
+    },
+    {
+      "brand": "Hyundai",
+      "model": "i20",
+      "image": "hyundaiI20.jpg",
+      "type": "Urban",
+      "color": "gray",
+      "manufacturingYear": "2023"
+    },
+    {
+      "brand": "Porsche",
+      "model": "911",
+      "image": "porsche911.jpg",
+      "type": "Coupe",
+      "color": "gray",
+      "manufacturingYear": "2021"
+    },
+    {
+      "brand": "Subaru",
+      "model": "impreza",
+      "image": "subaruImpreza.jpg",
+      "type": "Family",
+      "color": "black",
+      "manufacturingYear": "2022"
+    },
+    {
+      "brand": "Renault",
+      "model": "Captur",
+      "image": "renaultCaptur.jpg",
+      "type": "Suv",
+      "color": "gray",
+      "manufacturingYear": "2023"
+    },
+    {
+      "brand": "Peugeot",
+      "model": "3008",
+      "image": "peugeot3008.jpg",
+      "type": "Suv",
+      "color": "blue",
+      "manufacturingYear": "2023"
+    }
+  ]
