@@ -1,6 +1,6 @@
 import React from 'react'
 import { useState } from 'react';
-import bbdd from '../../data/bbdd.json'
+import { getAllCars } from '../helpers/getCars';
 
 export const SearchVehicleHook = () => {
   
@@ -12,13 +12,15 @@ export const SearchVehicleHook = () => {
     "color": '',
     "manufacturingYear": ''
   });
+  const [vehicles, setVehicles] = useState([])
+
 
   const [selectedBrand, setSelectedBrand] = useState('');
-
-  const [uniqueBrands, setUniqueBrands] = useState([...new Set(bbdd.map(vehicle => vehicle.brand))]);
-  const [manufacturingYear, setManufacturingYear] = useState([...new Set(bbdd.map(vehicle => vehicle.manufacturingYear))]);
-  const [uniqueTypes, setUniqueTypes] = useState([...new Set(bbdd.map(vehicle => vehicle.type))]);
-  const [uniqueColors, setUniqueColors] = useState([...new Set(bbdd.map(vehicle => vehicle.color))]);
+  const [uniqueBrands, setUniqueBrands] = useState([...new Set(vehicles.map(vehicle => vehicle.brand))]);
+  const [manufacturingYear, setManufacturingYear] = useState([...new Set(vehicles.map(vehicle => vehicle.manufacturingYear))]);
+  const [uniqueTypes, setUniqueTypes] = useState([...new Set(vehicles.map(vehicle => vehicle.type))]);
+  const [uniqueColors, setUniqueColors] = useState([...new Set(vehicles.map(vehicle => vehicle.color))]);
+  
   
 
 
@@ -26,7 +28,7 @@ export const SearchVehicleHook = () => {
 
 
   const handleChange = (e) => {
-    const { name, value } = event.target;
+    const { name, value } = e.target;
     setFormData(prevData => ({
       ...prevData,
       [name]: value
@@ -34,7 +36,7 @@ export const SearchVehicleHook = () => {
   };
 
   const handleSubmit = (e, { brand, model, type, color, manufacturingYear} = formData) => {
-    const filtered = bbdd.filter( car => car.brand.toLowerCase() === brand.toLowerCase() && car.model.toLowerCase() === model.toLowerCase() )
+    const filtered = vehicles.filter( car => car.brand.toLowerCase() === brand.toLowerCase() && car.model.toLowerCase() === model.toLowerCase() )
     setSearchResult(filtered)
 
     e.preventDefault();
@@ -51,6 +53,8 @@ export const SearchVehicleHook = () => {
     }));
   };
 
+ 
+
     return {
         ...formData,
         formData,
@@ -64,5 +68,7 @@ export const SearchVehicleHook = () => {
         uniqueBrands,
         uniqueColors,
         uniqueTypes,
+        vehicles,
+        setVehicles,
     }
 }

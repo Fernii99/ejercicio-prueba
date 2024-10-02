@@ -1,19 +1,26 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
 import { SearchVehicleHook } from '../hooks/searchVehicleHook'
-import bbdd  from '../../data/bbdd.json'
+import { getAllCars } from '../helpers/getCars';
 
 export const SearchVehicles = () => {
-  const {handleChange, manufacturingYear, uniqueBrands, uniqueTypes, handleSelectChange, selectedBrand, handleSubmit, searchResult, setSearchResult, uniqueColors, formData} = SearchVehicleHook();
+  const {handleChange, uniqueBrands, uniqueTypes, setVehicles, vehicles, handleSelectChange, uniqueColors, formData} = SearchVehicleHook();
 
   useEffect( () => {
-    setSearchResult(bbdd)
+    loadData();
   }, [])
+
+  const loadData = async () =>{
+    const allVehicles = await getAllCars();
+    setVehicles(allVehicles);
+
+    console.log(vehicles)
+  }
 
   return (
     <>
     <h1> Search cars</h1>
-      <form>
+      {/* <form>
         <label>Marca: </label>
         <select name="brand" value={formData.brand} onChange={handleSelectChange}>
           <option  name="brand"  value="">Seleccione la marca</option>
@@ -43,19 +50,19 @@ export const SearchVehicles = () => {
 
       <br/>
         <button type="submit" onClick={ handleSubmit }> Seach Vehicle </button>
-      </form>
+      </form> */}
       
 
       <div>
         <div>
           <h1> List of all cars </h1>
           <div style={{ display:'flex', flexDirection:'row', justifyContent: 'space-between', width: '50vw' }}>
-          {searchResult.length > 0 ? 
+          {vehicles.length != 0 ? 
           
-            searchResult.map( car => 
+            vehicles.map( car => 
                 <div key={car.model} className="card">
                   <h4> { car.brand }</h4>
-                  <img src={car.image} alt="car image" width="50" height="50" />
+                  <img src={car.image} alt="car image" width="100" height="100" />
                   <span> { car.model }</span>
                   <span> { car.type }</span>
                   <span> { car.color }</span>

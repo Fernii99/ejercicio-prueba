@@ -1,12 +1,10 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import bbdd from '../../data/bbdd.json'
 import { SearchVehicleHook } from '../hooks/searchVehicleHook';
+import axios from 'axios';
 
 export const AddVehicles = () => {
  
-
-  const [image, setImage] = useState('')
   const [newVehicle, setNewVehicle] = useState({
     "brand": '',
     "model": '',
@@ -24,61 +22,74 @@ export const AddVehicles = () => {
     }));
   };
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-  
-    console.log(newVehicle)
-    bbdd.push( newVehicle )
-    console.log(bbdd)
+  const handleImageChange = (e) => {
+    const { name, files } = e.target;
+    console.log(files[0])
+    setNewVehicle(prevData => ({
+      ...prevData,
+      [name]: files[0]
+    }));
   };
 
+  const handleSubmit = async (event) => {
+    event.preventDefault();
+    console.log(newVehicle)
+    try {
+      const response = await axios.post("http://localhost/car-test/save-car.php", newVehicle, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      console.log(response.data)
+    }catch (error){
+      console.log('error uploading car: ', error)
+    }
 
-  const handleImageChange = (event) => {
-    const file = event.target.files[0];
-        if (file) {
-            setNewVehicle((prev) => ({
-                ...prev,
-                image: `../public/images/${newVehicle.brand}${newVehicle.model}.jpg`,
-            }));
-        }
-};
-
-
-
+    setNewVehicle({
+      "brand": '',
+      "model": '',
+      "image": '',
+      "type": '',
+      "color": '',
+      "manufacturingYear": ''
+    })
+  };
 
   return (
     <>
     <h1> Add cars</h1>
       <form>
         <label>Marca: </label>
-        <input type="text" name="brand" placeholder="Marca del coche" onChange={handleChange} />
+        <input type="text" name="brand" value={newVehicle.brand} placeholder="Marca del coche" onChange={handleChange} />
         <br/>
 
         <label>Modelo: </label>
-        <input type="text" name="model" onChange={handleChange}/>
+        <input type="text" value={newVehicle.model} name="model" onChange={handleChange}/>
         <br/>
 
         <label>Imagen: </label>
-        <input type="file"
+        <input
+                type="file"
+                name="image"
                 id="fileInput"
                 accept="image/*"
-                onChange={handleImageChange}/>
+                onChange={event => handleImageChange(event)}/>
         <br/>
 
         <label>Tipo: </label>
-        <input type="text" name="type" onChange={handleChange}/>
+        <input type="text" name="type" value={newVehicle.type} onChange={handleChange}/>
         <br/>
 
         <label>Color: </label>
-        <input type="text" name="color" onChange={handleChange}/>
+        <input type="text" name="color" value={newVehicle.color} onChange={handleChange}/>
         <br/>
 
         <label>Año Fabricación: </label>
-        <input type="text" name="manufacturingYear" onChange={handleChange}/>
+        <input type="text" name="manufacturingYear" value={newVehicle.manufacturingYear} onChange={handleChange}/>
         <br/>
 
       <br/>
-        <button type="submit" onClick={ handleSubmit }> Add Vehicle </button>
+      <button type="submit" onClick={ handleSubmit }> Add Vehicle </button>
       </form>
       
 
