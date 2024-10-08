@@ -1,31 +1,22 @@
-import React from 'react'
-import { useState } from 'react';
-import { getAllCars } from '../helpers/getCars';
+import { useEffect, useState } from 'react';
+import axios from 'axios';
 
 export const SearchVehicleHook = () => {
-  
   const [formData, setFormData] = useState({
-    "brand": '',
-    "model": '',
-    "image": '',
-    "type": '',
-    "color": '',
-    "manufacturingYear": ''
+    brand: "",
+    model: "",
+    type: "",
+    color: "",
+    years: []
   });
-  const [vehicles, setVehicles] = useState([])
 
-
-  const [selectedBrand, setSelectedBrand] = useState('');
-  const [uniqueBrands, setUniqueBrands] = useState([...new Set(vehicles.map(vehicle => vehicle.brand))]);
-  const [manufacturingYear, setManufacturingYear] = useState([...new Set(vehicles.map(vehicle => vehicle.manufacturingYear))]);
-  const [uniqueTypes, setUniqueTypes] = useState([...new Set(vehicles.map(vehicle => vehicle.type))]);
-  const [uniqueColors, setUniqueColors] = useState([...new Set(vehicles.map(vehicle => vehicle.color))]);
-  
-  
-
-
-  const [searchResult, setSearchResult] = useState([])
-
+  const [vehicles, setVehicles] = useState([]);
+  const [uniqueBrands, setUniqueBrands] = useState([]);
+  const [uniqueTypes, setUniqueTypes] = useState([]);
+  const [uniqueColors, setUniqueColors] = useState([]);
+  const [uniqueModels, setUniqueModels] = useState([]);
+  const [years, setYears] = useState([]);
+  const [selectedYears, setSelectedYears] = useState([]);
 
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -35,40 +26,81 @@ export const SearchVehicleHook = () => {
     }));
   };
 
-  const handleSubmit = (e, { brand, model, type, color, manufacturingYear} = formData) => {
-    const filtered = vehicles.filter( car => car.brand.toLowerCase() === brand.toLowerCase() && car.model.toLowerCase() === model.toLowerCase() )
-    setSearchResult(filtered)
-
+  const handleSubmit = (e) => {
     e.preventDefault();
-
+    // SearchVehicles();
   };
-
 
   const handleSelectChange = (event) => {
     const { name, value } = event.target;
-    setSelectedBrand(value);
     setFormData(prevData => ({
       ...prevData,
       [name]: value
     }));
   };
 
- 
+  // Effect to sync selectedYears with formData
+  useEffect(() => {
+    setFormData(prevData => ({
+      ...prevData,
+      years: selectedYears
+    }));
 
-    return {
-        ...formData,
-        formData,
-        handleChange,
-        handleSelectChange,
-        handleSubmit,
-        manufacturingYear,
-        searchResult,
-        selectedBrand,
-        setSearchResult,
-        uniqueBrands,
-        uniqueColors,
-        uniqueTypes,
-        vehicles,
-        setVehicles,
-    }
-}
+    // SearchVehicles();
+    
+  }, [selectedYears]);
+
+  const handleCheckboxChange = (year) => {
+    setSelectedYears(prevSelectedYears => {
+      let updatedYears;
+  
+      if (prevSelectedYears.includes(year)) {
+        // If the year is already selected, remove it
+        updatedYears = prevSelectedYears.filter(y => y !== year);
+      } else {
+        // Otherwise, add it to the selection
+        updatedYears = [...prevSelectedYears, year];
+      }
+  
+      // Immediately update formData with the new years
+      setFormData(prevData => ({
+        ...prevData,
+        years: updatedYears
+      }));
+  
+      // Return the updated array for the setSelectedYears
+      return updatedYears;
+    });
+  };
+
+  // const SearchVehicles = async () => {
+  //   try {
+  //     const response = await axios.get('http://localhost:8000/api/cars', {
+  //       params: {
+  //         data: JSON.stringify(formData)
+  //       }
+  //     });
+
+  //     if (response.data.status === "400") {
+  //       setVehicles([]);
+  //     } else {
+  //       setVehicles(response.data.data);
+  //     }
+
+  //   } catch (error) {
+  //     console.log(error);
+  //   }
+  // };
+
+  return {
+    formData,
+    handleChange,
+    handleSelectChange,
+    handleSubmit,
+    selectedYears,
+    setSelectedYears,
+    vehicles,
+    setVehicles,
+    handleCheckboxChange
+  };
+};
