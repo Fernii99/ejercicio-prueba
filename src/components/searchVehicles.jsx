@@ -41,13 +41,13 @@ export const SearchVehicles = () => {
         return acc;
       }, {});
     };
-
+  
     // Calculate unique values and convert Sets to arrays
     const uniqueValues = calculateUniqueValues();
     const uniqueValuesArray = Object.fromEntries(
-      Object.entries(uniqueValues).map(([key, valueSet]) => [key, Array.from(valueSet)]
-    ));
-
+      Object.entries(uniqueValues).map(([key, valueSet]) => [key, Array.from(valueSet)])
+    );
+  
     setUniqueValues(uniqueValuesArray);
   }, [vehicles]);
 
@@ -62,7 +62,7 @@ export const SearchVehicles = () => {
       <h1> Search cars</h1>
       <form style={{ width: '100%', display: 'flex', flexWrap: 'wrap', justifyContent: 'space-around', alignItems: 'center' }}>
         {Object.entries(uniqueValues).map(([key, values]) => (
-            key != "id" && key != "image" ?
+            (key != "id" && key != "image")  ?
               <div key={key} style={{width: '15%'}}>
                 <select id={key} name={key} onChange={handleSelectChange} className='select'>
                   <option>select {key.charAt(0).toUpperCase()+ key.slice(1)}</option>
@@ -86,7 +86,7 @@ export const SearchVehicles = () => {
           { vehicles.length > 0 ? (
             vehicles.map((car, index) => (
               <div key={index} className="card">
-                <h4>{car.brand} - {car.model}</h4>
+                <h4>{car.brand_name} - {car.model}</h4>
                 <img src={car.image} alt="car image" width="200" height="150" />
                 <span>{car.type}</span>
                 <span>Color: {car.color}</span>

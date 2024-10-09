@@ -57,7 +57,7 @@ export const VehiclePage = () => {
 
 
     try {
-      const response = await axios.post("http://localhost/car-test/save-comment.php", commentObject, {
+      const response = await axios.post("http://localhost:8000/car-test/save-comment.php", commentObject, {
         headers: {
             'Content-Type': 'application/json'
         }}
@@ -88,8 +88,8 @@ export const VehiclePage = () => {
           </aside>
           
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'left', width: '100%'}}>
-              <h1 style={{textAlign: 'left'}} > {vehicleData.brand}</h1>
-              <p style={{textAlign: 'left', fontSize: 25, marginTop: '-20px'}}>  {vehicleData.model}</p>
+              <h1 style={{textAlign: 'left'}} > {vehicleData.brand.name}</h1>
+              <p style={{textAlign: 'left', fontSize: 25, marginTop: '-20px'}}> {vehicleData.model}</p>
               <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Type:</strong> {vehicleData.type}</p>
               <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Color:</strong> {vehicleData.color}</p>
               <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Manufacturing Year:</strong> {vehicleData.manufacturingYear}</p>
@@ -119,7 +119,6 @@ export const VehiclePage = () => {
                 )) 
               :
               <p> There are no comments on this vehicle</p>
-            
             }
 
           </div>
