@@ -13,7 +13,6 @@ export const VehiclePage = () => {
   const { id } = useParams();
 
   const [vehicleData, setVehicleData] = useState({});
-  const [ vehicleComments, setVehicleComments ] = useState({});
   const [isLoadingData, setIsLoadingData] = useState(true);
 
   const [name, setName] = useState('');
@@ -52,16 +51,14 @@ export const VehiclePage = () => {
       "car_id": id,
       "user": name,
       "comment_text": comment,
-      "created_at": new Date().toLocaleDateString()
     };
 
 
+    console.log(commentObject)
+
     try {
-      const response = await axios.post("http://localhost:8000/car-test/save-comment.php", commentObject, {
-        headers: {
-            'Content-Type': 'application/json'
-        }}
-      )
+      const response = await axios.post("http://localhost:8000/api/comments/new", commentObject);
+    
       setVehicleData((prevCar) => ({
         ...prevCar, // Spread the previous car object properties
         comments: [...prevCar.comments, commentObject] // Add new comment to the existing comments array
@@ -88,7 +85,7 @@ export const VehiclePage = () => {
           </aside>
           
           <div style={{display: 'flex', flexDirection: 'column', alignItems: 'left', width: '100%'}}>
-              <h1 style={{textAlign: 'left'}} > {vehicleData.brand.name}</h1>
+              <h1 style={{textAlign: 'left'}} > {vehicleData.brand}</h1>
               <p style={{textAlign: 'left', fontSize: 25, marginTop: '-20px'}}> {vehicleData.model}</p>
               <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Type:</strong> {vehicleData.type}</p>
               <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Color:</strong> {vehicleData.color}</p>

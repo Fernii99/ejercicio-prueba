@@ -11,6 +11,7 @@ import {
     createBrowserRouter,
     RouterProvider,
   } from "react-router-dom";
+import { ConcesionairePage } from './pages/ConcesionairePage.jsx';
 
   
   const router = createBrowserRouter([
@@ -22,6 +23,10 @@ import {
         path: "/vehicle/:id",
         element: <VehiclePage />,
     },
+    {
+      path: "/concesionaire",
+      element: <ConcesionairePage />,
+  },
   ]);
 
     createRoot(document.getElementById('root')).render(

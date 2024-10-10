@@ -16,8 +16,12 @@ export const SearchVehicles = () => {
 
   const navigate = useNavigate();
   
-  const handleClickView = (id) => {
-    navigate(`/vehicle/${id}`);
+  const handleClickView = (route, id) => {
+
+    route === "vehicle" ? 
+      navigate(`/vehicle/${id}`)
+    : 
+      navigate(`/concesionaire`)
   }
 
 
@@ -83,6 +87,8 @@ export const SearchVehicles = () => {
       <div>
         <h1>List of all cars</h1>
         <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', gap: 20, marginBottom: 50 }}>
+          <button type="submit" className="button" onClick={() => handleClickView("concesionaire", "")}>Change to concesionaires</button>
+
           { vehicles.length > 0 ? (
             vehicles.map((car, index) => (
               <div key={index} className="card">
@@ -91,7 +97,7 @@ export const SearchVehicles = () => {
                 <span>{car.type}</span>
                 <span>Color: {car.color}</span>
                 <span>Manufacturing Year: {car.manufacturingYear}</span>
-                <button type="submit" className="button" onClick={() => handleClickView(car.id)}>View vehicle information</button>
+                <button type="submit" className="button" onClick={() => handleClickView("vehicle", car.id)}>View vehicle information</button>
               </div>
             ))
           ) : (

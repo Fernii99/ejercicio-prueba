@@ -7,7 +7,7 @@ export const CommentCard = ({comentario}) => {
         <div style={{display: 'flex', flexDirection: 'row', width: '40%', textAlign: 'left', gap: 50}} >
             <p > User: {user} <br/>
             Comment: "{comment_text}" <br/>
-            posted: "{created_at.toLocaleString()}"
+            posted: "{created_at}"
             </p>
         </div>
     )
