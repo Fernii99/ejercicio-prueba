@@ -2,12 +2,6 @@ import React from 'react'
 import { useEffect, useState } from 'react';
 import { SearchVehicleHook } from '../hooks/searchVehicleHook'
 
-import {getAllColors} from '../helpers/getAllColors';
-import {getAllBrands} from '../helpers/getAllBrands';
-import {getAllTypes} from '../helpers/getAllTypes';
-import { getAllModels } from '../helpers/getAllModels';
-import {getAllYears} from '../helpers/getAllYears'
-
 import { getAllCars } from '../helpers/getAllCars';
 import { useNavigate } from 'react-router-dom';
 
@@ -87,18 +81,18 @@ export const SearchVehicles = () => {
       <div>
         <h1>List of all cars</h1>
         <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', gap: 20, marginBottom: 50 }}>
-          <button type="submit" className="button" onClick={() => handleClickView("concesionaire", "")}>Change to concesionaires</button>
+          
 
           { vehicles.length > 0 ? (
             vehicles.map((car, index) => (
               <div key={index} className="card">
-                <h4>{car.brand_name} - {car.model}</h4>
+                <h4>{car.brand_name} - {car.car_model}</h4>
                 <img src={car.image} alt="car image" width="200" height="150" />
                 <span>{car.type}</span>
                 <span>Color: {car.color}</span>
                 <span>Manufacturing Year: {car.manufacturingYear}</span>
                 <button type="submit" className="button" onClick={() => handleClickView("vehicle", car.id)}>View vehicle information</button>
-              </div>
+              </div>  
             ))
           ) : (
             <h3>No cars matching this criteria</h3>

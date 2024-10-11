@@ -28,14 +28,27 @@ export const AddVehicleHook = () => {
         }));
       };
     
+      const handleSelectChange = (event) => {
+        const { name, value } = event.target;
+        console.log(name + value)
+        setNewVehicle(prevData => ({
+          ...prevData,
+          [name]: value
+        }));
+      };
+
       const handleSubmit = async (event) => {
         event.preventDefault();
+        console.log("newVehicle DATA");
+        console.log(newVehicle);
         try {
-          const response = await axios.post("http://localhost/car-test/save-car.php", newVehicle, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          })
+          const response = await axios.post("http://localhost:8000/api/cars/new", newVehicle, {
+            headers:
+            {
+            'Content-Type': 'multipart/form-data',
+            }
+        },)
+          return response
         }catch (error){
           console.log('error uploading car: ', error)
         }
@@ -57,5 +70,6 @@ export const AddVehicleHook = () => {
     handleChange,
     handleImageChange,
     handleSubmit,
+    handleSelectChange,
     }
 }

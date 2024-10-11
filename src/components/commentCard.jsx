@@ -12,3 +12,4 @@ export const CommentCard = ({comentario}) => {
         </div>
     )
 }
+    

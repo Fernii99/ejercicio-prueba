@@ -12,6 +12,8 @@ import {
     RouterProvider,
   } from "react-router-dom";
 import { ConcesionairePage } from './pages/ConcesionairePage.jsx';
+import { ViewCars } from './pages/ViewCars.jsx';
+import { AddVehicle } from './pages/AddVehicle.jsx';
 
   
   const router = createBrowserRouter([
@@ -20,11 +22,19 @@ import { ConcesionairePage } from './pages/ConcesionairePage.jsx';
       element: <App />,
     },
     {
-        path: "/vehicle/:id",
-        element: <VehiclePage />,
+        path: "/vehicles",
+        element: <ViewCars />,
     },
     {
-      path: "/concesionaire",
+      path: "/add",
+      element: <AddVehicle />,
+    },
+    {
+      path: "/vehicle/:id",
+      element: <VehiclePage />,
+    },
+    {
+      path: "/concessionaires",
       element: <ConcesionairePage />,
   },
   ]);

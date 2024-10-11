@@ -1,19 +1,44 @@
 import React from 'react'
 import { useState, useEffect } from 'react';
-import { SearchVehicleHook } from '../hooks/searchVehicleHook';
-import axios from 'axios';
 import { AddVehicleHook } from '../hooks/addVehicleHook';
+import { getAllBrands } from '../helpers/getAllBrands';
 
 export const AddVehicles = () => {
  
-  const { newVehicle, handleChange, handleImageChange, handleSubmit } = AddVehicleHook();
+  const { newVehicle, handleChange, handleImageChange, handleSubmit, handleSelectChange  } = AddVehicleHook();
+
+  const [brands, setBrands] = useState([]);
+
+  useEffect( () => {
+      loadData();
+  }, [])
+  
+  useEffect( () => {
+  }, [brands])
+
+  const loadData = async () => {
+      const allBrands = await getAllBrands();
+      setBrands(allBrands);
+  }
+
 
   return (
     <>
     <h1> Add cars</h1>
       <form style={{ display: 'flex', flexDirection: 'column', justifyContent: 'space-evenly'}}>
           <label>Marca: </label>
-          <input type="text" name="brand" value={newVehicle.brand} placeholder="Marca del coche" onChange={handleChange} className="select"/>
+            {brands.length > 0 ? 
+            <select onChange={(event) => handleSelectChange(event)} name="brand" className='select'>
+            <option> Select Brand: </option>
+            {brands.map(brand => (
+              <option key={brand.id} value={brand.id}>
+                {brand.name}
+              </option>
+            ))}
+          </select>
+            :  
+              null
+            }
           <br/>
 
           <label>Modelo: </label>

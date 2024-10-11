@@ -11,11 +11,6 @@ export const SearchVehicleHook = () => {
   });
 
   const [vehicles, setVehicles] = useState([]);
-  const [uniqueBrands, setUniqueBrands] = useState([]);
-  const [uniqueTypes, setUniqueTypes] = useState([]);
-  const [uniqueColors, setUniqueColors] = useState([]);
-  const [uniqueModels, setUniqueModels] = useState([]);
-  const [years, setYears] = useState([]);
   const [selectedYears, setSelectedYears] = useState([]);
 
   const handleChange = (e) => {
