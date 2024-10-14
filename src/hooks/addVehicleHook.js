@@ -39,15 +39,21 @@ export const AddVehicleHook = () => {
 
       const handleSubmit = async (event) => {
         event.preventDefault();
-        console.log("newVehicle DATA");
-        console.log(newVehicle);
+        
+        const data = new FormData();
+        data.append('brand', newVehicle.brand);
+        data.append('model', newVehicle.model);
+        data.append('color', newVehicle.color);
+        data.append('manufacturingYear', newVehicle.manufacturingYear);
+        data.append('type', newVehicle.type);
+        data.append('image', newVehicle.image);
+
         try {
-          const response = await axios.post("http://localhost:8000/api/cars/new", newVehicle, {
-            headers:
-            {
-            'Content-Type': 'multipart/form-data',
-            }
-        },)
+          const response = await axios.post('http://localhost:8000/api/cars/new', data, {
+            headers: {
+                'Content-Type': 'multipart/form-data',
+            },
+          });
           return response
         }catch (error){
           console.log('error uploading car: ', error)

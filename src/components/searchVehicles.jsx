@@ -49,6 +49,10 @@ export const SearchVehicles = () => {
     setUniqueValues(uniqueValuesArray);
   }, [vehicles]);
 
+  useEffect(()=> {
+    console.log(uniqueValues)
+  }, [uniqueValues])
+
   const loadData = async () => {
     const allVehicles = await getAllCars();
     setVehicles(allVehicles);

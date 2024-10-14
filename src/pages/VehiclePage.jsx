@@ -3,7 +3,6 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { GetVehicleInformation } from '../helpers/getVehicleInformation';
-import { GetVehicleComments } from '../helpers/getVehicleComments';
 import { CommentCard } from '../components/commentCard';
 
 export const VehiclePage = () => {

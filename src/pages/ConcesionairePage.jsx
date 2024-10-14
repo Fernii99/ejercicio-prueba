@@ -1,74 +1,58 @@
 import React, { useEffect, useState } from 'react'
-import { getConcesionairesInformation } from '../helpers/getConcesionairesInformation';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+import { getConcesionaireInformation } from '../helpers/getConcesionaireInformation';
 
 export const ConcesionairePage = () => {
 
+    const { id } = useParams();
     const navigate = useNavigate();
-    const [concesionaires, setConcesionaires] = useState([])
-    const [isLoadingData, setIsLoadingData] = useState(true);
-    
+    const [concessionaire, setConcessionaire] = useState([]);
+    const [isDataLoading, setIsDataLoading] = useState(true);
 
-    useEffect( () => {
+    useEffect(() => {
         loadConcessionairesInformation();
     }, [])
 
+    useEffect(() => {
+    }, [isDataLoading])
+
     const loadConcessionairesInformation = async () => {
-        const concessionairesData = await getConcesionairesInformation();
-        setConcesionaires(concessionairesData);
+        const concessionairesData = await getConcesionaireInformation(id);
         
         setInterval(() => {
-          
         }, 1500);
-    
-        setIsLoadingData(!isLoadingData)
-    
-      } 
-
-    useEffect( ( ) => {
-
-    }, [concesionaires]);
+        
+        setConcessionaire(concessionairesData);
+        setIsDataLoading(false);
+    } 
 
 
-    const handleClickView = (route) => {
-        switch (route){
-            case 'vehicles':
-                return navigate('/vehicles');
-            case 'add':
-                return navigate('/add');
-            case 'concessionaires':
-                return navigate('/concessionaires');
-        }
-      }
+    const handleBack = () => {
+      navigate('/concessionaires');
+    }
 
   return (
-      
-      <div >
-        <button className="NavigationButton" onClick={() => handleClickView("vehicles")} style={{marginRight: 10}}> Search Vehicles </button>
-        <button className="NavigationButton" onClick={() => handleClickView("add")} style={{marginRight: 10}}> Add Vehicles </button>
-        <button className="NavigationButton" onClick={() => handleClickView("concessionaires")}>Change to concesionaires</button>
-    {
-       concesionaires.map(conc => (
-        <>
-            <h1>{ conc.name }</h1>
-            <div key={conc.id} style={{width: '30%', display: 'flex', justifyContent: 'space-around', alignItems:'center', margin: 'auto'}}>
-                <h3>Partners: </h3>
-                {conc.brand.map(brand => (
-                    <div key={brand.id}  className="badge">
-                        <h4>{brand.name}</h4>
-                    </div>
-                ))}
+    <>
+    <button className='NavigationButton' onClick={handleBack}> Return to Concessionaires page </button>
+      <h1> VEHICLES: </h1>
+    <div style={{display: 'flex', flexWrap: 'wrap', width: '100%', justifyContent: 'space-around'}}>
+       {!isDataLoading && concessionaire != [] ?
+        concessionaire.cars.map( vehicle => (
+          <div style={{width: '40%', border: '1px solid white', margin: '10px', display: 'flex', justifyContent: 'space-between'}} >
+            <img src={vehicle.image} width={200} alt="vehicle picture couldnt load" /> 
+            <div style={{display: 'flex', flexWrap: 'wrap', width: '700px', display: 'flex', justifyContent: 'space-around'  }}>
+              <p>Brand: {vehicle.brand}</p>
+              <p>Model: {vehicle.car_model}</p>
+              <p>type: {vehicle.type}</p>
+              <p>Color: {vehicle.color}</p>
+              <p>Manufactur Year: {vehicle.manufacturingYear}</p>
             </div>
-            {conc.cars.map( car => ( 
-                <div className='vehicleConcesionaireCard'>
-                    <div> </div>
-                </div>
-             ) 
-            )}
-        </>
-       ))
-    }
+          </div>
+        ))
+        : null
+      }
     </div>
-  )
 
+    </>
+  )
 }

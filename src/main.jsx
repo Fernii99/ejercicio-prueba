@@ -4,16 +4,17 @@ import App from './App.jsx'
 import './index.css'
 
 
-import { VehiclePage } from './pages/VehiclePage.jsx';
+import { VehiclePage } from './pages/VehiclePage';
 
 
 import {
     createBrowserRouter,
     RouterProvider,
   } from "react-router-dom";
-import { ConcesionairePage } from './pages/ConcesionairePage.jsx';
-import { ViewCars } from './pages/ViewCars.jsx';
-import { AddVehicle } from './pages/AddVehicle.jsx';
+import { ConcesionairesPage } from './pages/ConcesionairesPage';
+import { ViewCars } from './pages/ViewCars';
+import { AddVehicle } from './pages/AddVehicle';
+import { ConcesionairePage } from './pages/ConcesionairePage';
 
   
   const router = createBrowserRouter([
@@ -35,8 +36,12 @@ import { AddVehicle } from './pages/AddVehicle.jsx';
     },
     {
       path: "/concessionaires",
+      element: <ConcesionairesPage />,
+    },
+    {
+      path: "/concessionaire/:id",
       element: <ConcesionairePage />,
-  },
+    },
   ]);
 
     createRoot(document.getElementById('root')).render(
