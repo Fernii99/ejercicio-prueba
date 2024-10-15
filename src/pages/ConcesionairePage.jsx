@@ -31,16 +31,17 @@ export const ConcesionairePage = () => {
       navigate('/concessionaires');
     }
 
+
   return (
     <>
     <button className='NavigationButton' onClick={handleBack}> Return to Concessionaires page </button>
       <h1> VEHICLES: </h1>
-    <div style={{display: 'flex', flexWrap: 'wrap', width: '100%', justifyContent: 'space-around'}}>
+    <div style={{display: 'flex', flexWrap: 'wrap', width: '100%', margin: 'auto'}}>
        {!isDataLoading && concessionaire != [] ?
         concessionaire.cars.map( vehicle => (
           <div style={{width: '40%', border: '1px solid white', margin: '10px', display: 'flex', justifyContent: 'space-between'}} >
             <img src={vehicle.image} width={200} alt="vehicle picture couldnt load" /> 
-            <div style={{display: 'flex', flexWrap: 'wrap', width: '700px', display: 'flex', justifyContent: 'space-around'  }}>
+            <div style={{display: 'flex', flexWrap: 'wrap', width: '700px', display: 'flex', justifyContent: 'space-around'}}>
               <p>Brand: {vehicle.brand}</p>
               <p>Model: {vehicle.car_model}</p>
               <p>type: {vehicle.type}</p>
