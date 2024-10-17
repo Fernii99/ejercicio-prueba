@@ -2,25 +2,16 @@ import React from 'react'
 import { useState, useEffect } from 'react';
 import { AddVehicleHook } from '../hooks/addVehicleHook';
 import { getAllBrands } from '../helpers/getAllBrands';
+import { useLocation, useParams } from 'react-router-dom';
 
 export const AddVehicles = () => {
  
   const { newVehicle, handleChange, handleImageChange, handleSubmit, handleSelectChange  } = AddVehicleHook();
 
-  const [brands, setBrands] = useState([]);
+  // const [brands, setBrands] = useState([]);
 
-  useEffect( () => {
-      loadData();
-  }, [])
-  
-  useEffect( () => {
-  }, [brands])
-
-  const loadData = async () => {
-      const allBrands = await getAllBrands();
-      setBrands(allBrands);
-  }
-
+  const location = useLocation();
+  const { brands } = location.state || {};
 
   return (
     <>

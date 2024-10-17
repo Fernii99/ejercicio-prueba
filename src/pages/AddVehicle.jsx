@@ -13,8 +13,8 @@ export const AddVehicle = () => {
         switch (route){
             case 'vehicles':
                 return navigate('/vehicles');
-            case 'add':
-                return navigate('/add');
+            case 'back':
+                return navigate(-1);
             case 'concessionaires':
                 return navigate('/concessionaires');
         }
@@ -24,7 +24,7 @@ export const AddVehicle = () => {
   return (
     <>
         <button className="NavigationButton" onClick={() => handleClickView("vehicles")} style={{marginRight: 10}}> Search Vehicles </button>
-        <button className="NavigationButton" onClick={() => handleClickView("add")} style={{marginRight: 10}}> Add Vehicles </button>
+        <button className="NavigationButton" onClick={() => handleClickView("back")} style={{marginRight: 10}}> Back to Concesionaire information </button>
         <button className="NavigationButton" onClick={() => handleClickView("concessionaires")}>Change to concesionaires</button>
 
         <div style={{margin: 'auto', display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent:'center', width: '50%'}}>

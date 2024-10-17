@@ -15,6 +15,7 @@ import { ConcesionairesPage } from './pages/ConcesionairesPage';
 import { ViewCars } from './pages/ViewCars';
 import { AddVehicle } from './pages/AddVehicle';
 import { ConcesionairePage } from './pages/ConcesionairePage';
+import { CharactersPage } from './pages/CharactersPage.jsx';
 
   
   const router = createBrowserRouter([
@@ -27,7 +28,7 @@ import { ConcesionairePage } from './pages/ConcesionairePage';
         element: <ViewCars />,
     },
     {
-      path: "/add",
+      path: "/add/:id",
       element: <AddVehicle />,
     },
     {
@@ -41,6 +42,10 @@ import { ConcesionairePage } from './pages/ConcesionairePage';
     {
       path: "/concessionaire/:id",
       element: <ConcesionairePage />,
+    },
+    {
+      path: "/characters",
+      element: <CharactersPage />,
     },
   ]);
 

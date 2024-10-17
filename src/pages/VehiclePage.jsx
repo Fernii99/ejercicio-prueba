@@ -72,18 +72,18 @@ export const VehiclePage = () => {
           </div>
         
           <div style={{width: '100%', display: 'flex', marginBottom: 70, gap: 90}}>
+            
             <aside style={{width: '50%'}}>
               <img src={updatedVehicle.image} alt="vehicles image" width="100%" height="auto" />
             </aside>
             
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'left', width: '100%'}}>
-                <h1 style={{textAlign: 'left'}} > {updatedVehicle.brand}</h1>
-                <p style={{textAlign: 'left', fontSize: 25, marginTop: '-20px'}}> {updatedVehicle.model}</p>
-                <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Type:</strong> {updatedVehicle.type}</p>
-                <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Color:</strong> {updatedVehicle.color}</p>
-                <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Manufacturing Year:</strong> {updatedVehicle.manufacturingYear}</p>
+              <h1 style={{textAlign: 'left'}}> {updatedVehicle.brand}</h1>
+              <p style={{textAlign: 'left', fontSize: 25, marginTop: '-20px'}}> {updatedVehicle.model}</p>
+              <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Type:</strong> {updatedVehicle.type}</p>
+              <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Color:</strong> {updatedVehicle.color}</p>
+              <p style={{textAlign: 'left', marginTop: '-10px'}}><strong>Manufacturing Year:</strong> {updatedVehicle.manufacturingYear}</p>
             </div>
-
 
           </div>
         

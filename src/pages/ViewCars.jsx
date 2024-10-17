@@ -20,6 +20,7 @@ export const ViewCars = () => {
   }, [])
 
   useEffect( () => {
+    
   }, [vehicles])
 
   const loadData = async () =>{
@@ -43,7 +44,6 @@ export const ViewCars = () => {
   return (
     <>
         <button className="NavigationButton" onClick={() => handleClickView("vehicles")} style={{marginRight: 10}}> Search Vehicles </button>
-        <button className="NavigationButton" onClick={() => handleClickView("add")} style={{marginRight: 10}}> Add Vehicles </button>
         <button className="NavigationButton" onClick={() => handleClickView("concessionaires")}>Change to concesionaires</button>
         <SearchVehicles />
     </>

@@ -1,7 +1,11 @@
 
 import { useState } from "react";
 import axios from "axios";
+import { useNavigate, useParams } from "react-router-dom";
 export const AddVehicleHook = () => {
+
+  const {id} = useParams();
+  const navigate = useNavigate();
 
     const [newVehicle, setNewVehicle] = useState({
         "brand": '',
@@ -9,7 +13,8 @@ export const AddVehicleHook = () => {
         "image": '',
         "type": '',
         "color": '',
-        "manufacturingYear": ''
+        "manufacturingYear": '',
+        "concessionaire_id":''
       });
     
       const handleChange = (e) => {
@@ -47,6 +52,7 @@ export const AddVehicleHook = () => {
         data.append('manufacturingYear', newVehicle.manufacturingYear);
         data.append('type', newVehicle.type);
         data.append('image', newVehicle.image);
+        data.append('concessionaire_id', id)
 
         try {
           const response = await axios.post('http://localhost:8000/api/cars/new', data, {
@@ -54,19 +60,12 @@ export const AddVehicleHook = () => {
                 'Content-Type': 'multipart/form-data',
             },
           });
-          return response
+          navigate(`/concessionaire/${id}`)
         }catch (error){
           console.log('error uploading car: ', error)
         }
-    
-        setNewVehicle({
-          "brand": '',
-          "model": '',
-          "image": '',
-          "type": '',
-          "color": '',
-          "manufacturingYear": ''
-        })
+        
+
       };
 
 
