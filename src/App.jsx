@@ -51,7 +51,6 @@ function App() {
   <>
   <div className='NavigationBar'>
     <button className="NavigationButton" onClick={() => handleClickView("vehicles")} style={{marginRight: 10}}> Search Vehicles </button>
-    <button className="NavigationButton" onClick={() => handleClickView("add")} style={{marginRight: 10}}> Add Vehicles </button>
     <button className="NavigationButton" onClick={() => handleClickView("concessionaires")}>Change to concesionaires</button>
   </div>
     <div style={{width:'100%', display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
