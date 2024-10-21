@@ -1,7 +1,7 @@
 import axios from "axios";
 
 
-export const getAllTheCharacters = async (id) => {
+export const getAllTheCharacters = async () => {
     try{
         const response = await axios.get(`http://localhost:8000/api/characters/getall`);
         if (response.status === 200){

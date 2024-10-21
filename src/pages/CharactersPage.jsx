@@ -11,7 +11,7 @@ export const CharactersPage = () => {
   }, []);
 
   useEffect(() => {
-console.log(characters)
+  console.log(characters)
   }, [characters])
 
   const loadData = async () => {
@@ -21,13 +21,13 @@ console.log(characters)
 
   return    (
     <>
-    {characters == {} ?
-      (
+      {!characters == {} 
+        ?
         <h1>Loading Data</h1>
-      )
-      :
-      <ListCharacters characters={characters} /> 
-    }
+        :
+        <ListCharacters characters={characters} /> 
+      }
     </>
+   
   )
 }
