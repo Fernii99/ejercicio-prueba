@@ -6,6 +6,7 @@ import './index.css'
 
 import { VehiclePage } from './pages/VehiclePage';
 
+import { QueryClientProvider, QueryClient } from '@tanstack/react-query'
 
 import {
     createBrowserRouter,
@@ -49,8 +50,13 @@ import { CharactersPage } from './pages/CharactersPage.jsx';
     },
   ]);
 
+  const queryClient = new QueryClient()
+
+
     createRoot(document.getElementById('root')).render(
     <StrictMode>
-        <RouterProvider router={router}/>
+       <QueryClientProvider client={queryClient}>
+          <RouterProvider router={router}/>
+       </QueryClientProvider>
     </StrictMode>
 )

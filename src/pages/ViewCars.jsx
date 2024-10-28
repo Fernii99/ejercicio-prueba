@@ -5,9 +5,10 @@ import { useEffect } from 'react';
 import { SearchVehicleHook } from '../hooks/searchVehicleHook';
 
 import { SearchVehicles } from '../components/searchVehicles';
-import { NavigationButtons } from '../components/navigationButtons';
 import { useNavigate } from 'react-router-dom';
 import { getAllCars } from '../helpers/getAllCars';
+
+import { useQuery } from '@tanstack/react-query'
 
 export const ViewCars = () => {
 
@@ -15,18 +16,18 @@ export const ViewCars = () => {
 
   const { setVehicles, vehicles } = SearchVehicleHook();
 
-  useEffect( () => {
-    loadData();
-  }, [])
+  // useEffect( () => {
+  //   loadData();
+  // }, [])
 
-  useEffect( () => {
+  // useEffect( () => {
     
-  }, [vehicles])
+  // }, [vehicles])
 
-  const loadData = async () =>{
-    const allVehicles = await getAllCars();
-    setVehicles(allVehicles);
-  }
+  // const loadData = async () =>{
+  //   const allVehicles = await getAllCars();
+  //   setVehicles(allVehicles);
+  // }
 
   const handleClickView = (route) => {
     

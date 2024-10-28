@@ -2,20 +2,15 @@ import React, { useEffect, useState } from 'react'
 import { getFilteredCharacters } from '../../helpers/characters/getFilteredCharacters';
 
 export const ListCharacters = ({characters}) => {
-  const [charactersData, setCharactersData] = useState({})
+  const [charactersData, setCharactersData] = useState(characters)
   
   const [selectedOptions, setSelectedOptions] = useState({
     "name": '',
     "gender": '',
-    "image": '',
+    "image": 'yes',
   });
 
-  useEffect(() => {
-    setCharactersData(characters)
-  }, []) 
-
   useEffect( () => {
-    alert(JSON.stringify(charactersData))
   }, [charactersData])
 
   const handleChange = (event) => {
@@ -44,6 +39,7 @@ export const ListCharacters = ({characters}) => {
   };
 
   const handleSearchData = async () => {
+    console.log(selectedOptions)
     const filteredData =  await getFilteredCharacters(selectedOptions);
     setCharactersData(filteredData)
   }

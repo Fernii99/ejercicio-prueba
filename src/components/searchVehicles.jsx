@@ -1,13 +1,45 @@
 import React from 'react'
 import { useEffect, useState } from 'react';
-import { SearchVehicleHook } from '../hooks/searchVehicleHook'
+import { SearchVehicleHook2 } from '../hooks/searchVehicleHook2'
 
-import { getAllCars } from '../helpers/getAllCars';
 import { useNavigate } from 'react-router-dom';
+import { useQuery } from '@tanstack/react-query'
+
 
 export const SearchVehicles = () => {
-  const { vehicles, setVehicles, handleSelectChange, formData, filterVehicles, setFilterVehicles,  handleCheckboxChange, handleResetAction, SearchFilteredVehicles } = SearchVehicleHook();
   const navigate = useNavigate();
+  const { calculateUniqueValues, handleSelectChange, filterVehicles, setFilterVehicles } = SearchVehicleHook2();
+
+  // State to hold unique vehicle types data values and the different values on each vehicle
+  const [filtersValues, setFiltersValues] = useState({});
+
+  //LOAD OF THE VEHICLES DATA & GENERATION OF THE FILTERS ON THE COMPONENT LOAD
+  // store of the values, unique identification name
+  const { isPending, error, data } = useQuery({
+    queryKey: ['vehicleData'],
+    queryFn: async () => {
+      const response = await fetch('http://localhost:8000/api/cars');
+      const json = await response.json();
+
+      // Process data for unique values
+      const uniqueValues = calculateUniqueValues(json);
+      const uniqueValuesArray = Object.fromEntries(
+        Object.entries(uniqueValues).map(([key, valueSet]) => [key, Array.from(valueSet)])
+      );
+
+      // Update component state
+      setFilterVehicles(json);
+      setFiltersValues(uniqueValuesArray);
+
+      // Return the data so `useQuery` can use it
+      return json;
+    },
+    refetchOnWindowFocus: false, // Automatically refetches when window gains focus
+  })
+
+  /**
+   *  NAVIGATION TO THE VEHICLE PAGE OR CONCESSIONAIRES PAGE  
+   */
   const handleClickView = (route, id) => {
     route === "vehicle" ? 
       navigate(`/vehicle/${id}`)
@@ -15,58 +47,11 @@ export const SearchVehicles = () => {
       navigate(`/concesionaire`)
   } 
 
-  // State to hold unique vehicle types data values and the different values on each vehicle
-  const [uniqueValues, setUniqueValues] = useState({});
-  const [filtersValues, setFiltersValues] = useState({});
+    
   
-  useEffect(() => {
-    loadData();
-  }, [])
+  if (isPending) return 'Loading...'
 
-  useEffect(() => {
-    // Function to calculate unique values for each field
-    const calculateUniqueValues = () => {
-      console.log("VEHICLES DATA");
-      console.log(vehicles)
-      return vehicles.reduce((acc, vehicle) => {
-        Object.keys(vehicle).forEach((key) => {
-          if (!acc[key]) {
-            acc[key] = new Set(); // Initialize a new Set for each key
-          }
-          acc[key].add(vehicle[key]); // Add the vehicle's value to the Set
-        });
-        return acc;
-      }, {});
-    };
-  
-    // Calculate unique values and convert Sets to arrays
-    const uniqueValues = calculateUniqueValues();
-    const uniqueValuesArray = Object.fromEntries(
-      Object.entries(uniqueValues).map(([key, valueSet]) => [key, Array.from(valueSet)])
-    );
-  
-    setUniqueValues(uniqueValuesArray);
-  }, [vehicles]);
-
-  useEffect(()=> {
-    setFiltersValues(uniqueValues)
-  }, [uniqueValues])
-
-  useEffect( () => {
-    SearchFilteredVehicles();
-  }, [filtersValues, formData])
-
-  const loadData = async () => {
-    const allVehicles = await getAllCars();
-    setVehicles(allVehicles);
-    setFilterVehicles(allVehicles);
-  };
-
-  const handleReset = (e) =>{ 
-    e.preventDefault();
-    handleResetAction(); 
-    setFiltersValues(uniqueValues)
-  }
+  if (error) return 'An error has occurred: ' + error.message
 
   return (
     <>
@@ -76,7 +61,7 @@ export const SearchVehicles = () => {
             (key != "id" && key != "image" && key != "brand_id")  ?
             (key != "manufacturingYear") ?
               <div key={key} style={{width: '15%'}}>
-                <select id={key} name={key} onChange={handleSelectChange} className='select'>
+                <select id={key} name={key} onChange={(event) => handleSelectChange(event, data)} className='select'>
                   <option name={key} value="">select {key.charAt(0).toUpperCase()+ key.slice(1)}</option>
                   {values.map((value, index) => (
                     <option key={index} value={value}>
@@ -98,15 +83,13 @@ export const SearchVehicles = () => {
               null
         ))}
         
-        {/* <button type="submit" onClick={(event) => handleSubmit(event)} className="FiltersButton">Search Vehicle</button> */}
         <button type="submit" onClick={(event) => handleReset(event)} className="FiltersButton">Reset</button>
       </form>
 
       <div>
         <h1>List of all cars</h1>
         <div style={{ display: 'flex', flexWrap: 'wrap', flexDirection: 'row', gap: 20, marginBottom: 50 }}>
-          { filterVehicles.length > 0 ? (
-            filterVehicles.map((car, index) => (
+            {filterVehicles.map((car, index) => (
               <div key={index} className="card">
                 <h4>{car.brand_name} - {car.car_model}</h4>
                 <img src={car.image} alt="car image" width="200" height="150" />
@@ -115,10 +98,7 @@ export const SearchVehicles = () => {
                 <span>Manufacturing Year: {car.manufacturingYear}</span>
                 <button type="submit" className="button" onClick={() => handleClickView("vehicle", car.id)}>View vehicle information</button>
               </div>  
-            ))
-          ) : (
-            <h3>No cars matching this criteria</h3>
-          )}
+            ))}
         </div>
       </div>
     </>

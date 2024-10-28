@@ -6,9 +6,7 @@ import { useLocation, useParams } from 'react-router-dom';
 
 export const AddVehicles = () => {
  
-  const { newVehicle, handleChange, handleImageChange, handleSubmit, handleSelectChange  } = AddVehicleHook();
-
-  // const [brands, setBrands] = useState([]);
+  const { newVehicle, handleChange, handleImageChange, handleSubmit, handleSelectChange, vehicleMutation  } = AddVehicleHook();
 
   const location = useLocation();
   const { brands } = location.state || {};

@@ -1,7 +1,6 @@
 import React, { useEffect, useState  } from 'react'
 import { useNavigate } from 'react-router-dom';
 import { AddVehicles } from '../components/addVehicles';
-import { getAllBrands } from '../helpers/getAllBrands';
 
 export const AddVehicle = () => {
     

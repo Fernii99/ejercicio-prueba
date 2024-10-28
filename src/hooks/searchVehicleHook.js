@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import axios from 'axios';
+
 
 export const SearchVehicleHook = () => {
   const [formData, setFormData] = useState({
@@ -19,13 +19,19 @@ export const SearchVehicleHook = () => {
     ResetSearch();
   };
 
-  const handleSelectChange = (event) => {
+  const handleSelectChange = (event, data) => {
+    console.log("selects option changed")
     const { name, value } = event.target;
     setFormData(prevData => ({
       ...prevData,
       [name]: value
     }));
+
+    // Call SearchFilteredVehicles with the updated formData
+    SearchFilteredVehicles(data);
   };
+
+  
 
   const handleCheckboxChange = (year) => {
     setSelectedYears(prevSelectedYears => {
@@ -68,10 +74,13 @@ export const SearchVehicleHook = () => {
 
   //FILTERS ON ALL THE VEHICLES RETRIVED ON THE LOAD OF THE COMPONENT AND
   //STORES IT ON THE FILTERED VEHICLES
-  const SearchFilteredVehicles = async () => {
-    
-    const filteredData = vehicles.filter(item => matchesFilter(item, formData));
+  const SearchFilteredVehicles = async ( ...data ) => {
+    console.log("data")
+    console.log(data)
+    const filteredData = data.filter(item => matchesFilter(item, formData));
     setFilterVehicles(filteredData);
+    console.log("filterVehicles")
+    console.log(filterVehicles)
   };
 
   //FILTERS ON ALL THE VEHICLES RETRIVED ON THE LOAD OF THE COMPONENT AND
