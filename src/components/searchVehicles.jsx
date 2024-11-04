@@ -8,7 +8,7 @@ import { useQuery } from '@tanstack/react-query'
 
 export const SearchVehicles = () => {
   const navigate = useNavigate();
-  const { calculateUniqueValues, handleSelectChange, filterVehicles, setFilterVehicles } = SearchVehicleHook2();
+  const { calculateUniqueValues, handleSelectChange, filterVehicles, setFilterVehicles, formData, matchesFilter, handleCheckboxChange, selectedYears} = SearchVehicleHook2();
 
   // State to hold unique vehicle types data values and the different values on each vehicle
   const [filtersValues, setFiltersValues] = useState({});
@@ -36,7 +36,17 @@ export const SearchVehicles = () => {
     },
     refetchOnWindowFocus: false, // Automatically refetches when window gains focus
   })
-
+  
+  useEffect(() => {
+    if (data) {
+      const SearchFilteredVehicles = (data) => {
+        const filteredData = data.filter(item => matchesFilter(item, formData));
+        setFilterVehicles(filteredData);
+      };
+      
+      SearchFilteredVehicles(data);
+    }
+  }, [formData, data]);
   /**
    *  NAVIGATION TO THE VEHICLE PAGE OR CONCESSIONAIRES PAGE  
    */
@@ -71,11 +81,11 @@ export const SearchVehicles = () => {
                 </select>
               </div>
               :
-              <div key={key} style={{width: '15%', }}>
+              <div key={key} index={key}  style={{width: '15%', }}>
                 <h3> Manufacturing Years </h3>
                 {values.map((value, index) => (
                   <>
-                    <input type='checkbox' id="manufacturingYear" name="manufacturingYear" value={value} onChange={() => handleCheckboxChange(value)} style={{marginLeft: 25}}/>{value}
+                    <input type='checkbox' id="manufacturingYear" index={index} name="manufacturingYear" value={value} onChange={() => handleCheckboxChange(value)} style={{marginLeft: 25}}/>{value}
                   </>
                 ))}
               </div>

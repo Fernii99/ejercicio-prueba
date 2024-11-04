@@ -17,12 +17,16 @@ import { ViewCars } from './pages/ViewCars';
 import { AddVehicle } from './pages/AddVehicle';
 import { ConcesionairePage } from './pages/ConcesionairePage';
 import { CharactersPage } from './pages/CharactersPage.jsx';
-
-  
+import { CicarPage } from './pages/CicarLearning/CicarPage.jsx';  
+import { ReservationPage } from './pages/CicarLearning/ReservationPage.jsx';
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <App />,
+      element: <CicarPage />,
+    },
+    {
+      path: "/reservation",
+      element: <ReservationPage />,
     },
     {
         path: "/vehicles",

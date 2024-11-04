@@ -1,35 +1,46 @@
 import { useNavigate, useParams } from 'react-router-dom';
-import { useQuery } from '@tanstack/react-query'
+import { useQueries} from '@tanstack/react-query'
 
 export const ConcesionairePage = () => {
 
     const { id } = useParams();
     const navigate = useNavigate();
+    
+    const results = useQueries({
+    queries: [
+      {
+        queryKey: ['concessionaire', id],
+        queryFn: async () => {
+          const response = await fetch(`http://localhost:8000/api/concessionaire/${id}`);
+          return response.json();
+        }
+      },
+      {
+        queryKey: ['concessionaireComments', id],
+        queryFn: async () => {
+          const response = await fetch(`http://localhost:8000/api/concessionaire/${id}/comments`);
+          return response.json();
+        }
+      }
+    ]
+  });
 
-    
-    const concessionaire = useQuery({
-      queryKey: ['concessionaireData'],
-      queryFn: () => fetch(`http://localhost:8000/api/concessionaire/${id}`).then((res) => res.json()).then((json) => {return json})
-    })
-    
-    const comment = useQuery({
-      queryKey: ['commentData'],
-      queryFn: () => fetch(`http://localhost:8000/api/concessionaire/${id}/comments`).then((res) => res.json()).then((json) => {return json})
-    })
+  const concessionaire = results[0];
+  const comments = results[1];
     
     const handleBack = () => {
       navigate('/concessionaires');
     }
 
     const handleAddVehicle = () => {
-      navigate(`/add/${id}`, { state: { brands: concessionaire.data.brand } });
+      navigate(`/add/${id}`, { state: { brands: results[0].data.brand } });
     }
 
-    if (concessionaire.isLoading || comment.isLoading) {
+    if (concessionaire.isLoading || comments.isLoading) {
       return <div>Loading...</div>;
     }
     
-    if (concessionaire.error || comment.error) {
+    if (concessionaire.error || comments.error) {
       return <div>Error loading data</div>;
     }
 
@@ -61,8 +72,8 @@ export const ConcesionairePage = () => {
 
     <h1> COMMENTS: </h1>
     <div style={{display: 'flex', flexWrap: 'wrap', width: '100%', margin: 'auto'}}>
-       {comment.data &&
-        comment.data.map( coment => (
+       {comments.data &&
+        comments.data.map( coment => (
           <>
             <div style={{width: '40%', border: '1px solid white', margin: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between'}} >
                 <span> User: {coment.user} <br/> Comment: {coment.comment_text} <br/> Publish Date: {coment.created_at} <br/> Car ID: {coment.car_id}</span>

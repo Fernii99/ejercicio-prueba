@@ -1,35 +1,11 @@
 import { useEffect, useState } from 'react'
 import './App.css'
-import { SearchVehicles } from './components/searchVehicles'
-import { AddVehicles } from './components/addVehicles'
 import { SearchVehicleHook } from './hooks/searchVehicleHook'
 import { getAllCars } from './helpers/getAllCars'
-import { VehicleList } from './components/vehicleList'
 import { BrowserRouter as Router, Route, Routes, useNavigate } from 'react-router-dom';
-import { VehiclePage } from './pages/VehiclePage'
 
 function App() {
-
-  const [component, setComponent] = useState("searchVehicles")
-
-  const { setVehicles, vehicles } = SearchVehicleHook();
-
-  useEffect( () => {
-    loadData();
-  }, [])
-
-  useEffect( () => {
-  }, [vehicles])
-
-  const loadData = async () =>{
-    const allVehicles = await getAllCars();
-    setVehicles(allVehicles);
-  }
   
-  const ChangeComponent = (value) => {
-    setComponent(value.toString());
-  }
-
   const navigate = useNavigate();
 
   const handleClickView = (route) => {

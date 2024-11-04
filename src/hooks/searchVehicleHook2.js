@@ -12,6 +12,7 @@ export const SearchVehicleHook2 = () => {
   });
 
   const [filterVehicles, setFilterVehicles] = useState([]);
+  const [selectedYears, setSelectedYears] = useState([]);
 
   // Function to calculate unique values for each field
   const calculateUniqueValues = (data) => {
@@ -26,9 +27,11 @@ export const SearchVehicleHook2 = () => {
     }, {});
   };
   
+  
 
   const handleSelectChange = (event, data) => {
     const { name, value } = event.target;
+    
     setFormData(prevData => ({
       ...prevData,
       [name]: value
@@ -53,10 +56,39 @@ export const SearchVehicleHook2 = () => {
     );
   };
 
+  const handleCheckboxChange = (year) => {
+    setSelectedYears(prevSelectedYears => {
+    let updatedYears;
+    
+    // If the year is already selected, remove it
+    if (prevSelectedYears.includes(year)) {
+      updatedYears = prevSelectedYears.filter(y => y !== year);
+    } else {
+      // Otherwise, add it to the selection
+      updatedYears = [...prevSelectedYears, year];
+    }
+    
+    // Immediately update formData with the new years
+    const updatedFormData = {
+      ...formData,
+      manufacturingYear: updatedYears
+    };
+    
+    // Update formData in state
+    setFormData(updatedFormData);
+    
+    // Return the updated array for setSelectedYears
+    return updatedYears;
+    });
+  }
+
   return {
     calculateUniqueValues,
     handleSelectChange,
     filterVehicles, 
-    setFilterVehicles
+    setFilterVehicles,
+    formData,
+    matchesFilter,
+    handleCheckboxChange
   }
 };

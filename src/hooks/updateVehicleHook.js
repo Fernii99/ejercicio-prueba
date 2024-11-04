@@ -19,7 +19,7 @@ export const UpdateVehicleHook = () => {
     const [isEditMode, setIsEditMode] = useState(false);
 
     const updateVehicleMutation = useMutation({
-      mutationFn: async (id, updatedVehicle) => {
+      mutationFn: async () => {
           try {
               const response = await axios.put(`http://localhost:8000/api/cars/update/${id}`, updatedVehicle, {
                   headers: {
@@ -36,7 +36,6 @@ export const UpdateVehicleHook = () => {
     });
 
   useEffect( () => {
-    console.log(updatedVehicle)
   }, [updatedVehicle])
     
     const handleChange = (e) => {
@@ -58,14 +57,13 @@ export const UpdateVehicleHook = () => {
     const handleSubmit = async (event) => {
       event.preventDefault; // Prevent default form submission
   
-      const vehicleId = id; // Ensure this ID is set correctly
-      const vehicleData = updatedVehicle; // Make sure this is the correct data structure
-  
+      
       try {
-          const response = await updateVehicleMutation.mutateAsync(vehicleId, vehicleData);
-          console.log('Vehicle updated successfully:', response);
+          await updateVehicleMutation.mutateAsync();
+          alert('Vehicle updated successfully');
+          
       } catch (error) {
-          console.error('Failed to update vehicle:', error);
+          alert('Failed to update vehicle, try again please ');
       }
   };
 

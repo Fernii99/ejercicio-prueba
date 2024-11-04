@@ -1,45 +1,20 @@
 
 import React from 'react'
-import { useEffect } from 'react';
-
-import { SearchVehicleHook } from '../hooks/searchVehicleHook';
-
 import { SearchVehicles } from '../components/searchVehicles';
 import { useNavigate } from 'react-router-dom';
-import { getAllCars } from '../helpers/getAllCars';
-
-import { useQuery } from '@tanstack/react-query'
 
 export const ViewCars = () => {
 
-    const navigate = useNavigate();
-
-  const { setVehicles, vehicles } = SearchVehicleHook();
-
-  // useEffect( () => {
-  //   loadData();
-  // }, [])
-
-  // useEffect( () => {
-    
-  // }, [vehicles])
-
-  // const loadData = async () =>{
-  //   const allVehicles = await getAllCars();
-  //   setVehicles(allVehicles);
-  // }
-
+  const navigate = useNavigate();
   const handleClickView = (route) => {
-    
     switch (route){
-        case 'vehicles':
-            return navigate('/vehicles');
-        case 'add':
-            return navigate('/add');
-        case 'concessionaires':
-            return navigate('/concessionaires');
+      case 'vehicles':
+          return navigate('/vehicles');
+      case 'add':
+          return navigate('/add');
+      case 'concessionaires':
+          return navigate('/concessionaires');
     }
-
   }
 
   return (
