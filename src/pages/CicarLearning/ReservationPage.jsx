@@ -11,8 +11,8 @@ export const ReservationPage = () => {
         'Usuario': "DitGes",
         'Clave': "DitCan2023",
         'Tarifa': "",
-        'FechaInicio': "",
-        'FechaFin': "",
+        'FechaInicio': Date.now(),
+        'FechaFin': Date.now(),
         'Zona': "",
         'OfiEnt': "",
         'OfiDev': "",
@@ -24,12 +24,8 @@ export const ReservationPage = () => {
         'Baca': false,
     });
     
-    const [selectedZone, setSelectedZone] = useState("")
-
-
-    useEffect( () => {
-
-    }, [availableCarsFilters])
+    const [selectedZone, setSelectedZone] = useState("");
+    const [devMismaOficina, setDevMismaOficina] = useState(false);
 
     useEffect(() => {
         if (selectedZone) {
@@ -79,8 +75,11 @@ export const ReservationPage = () => {
     } = useQuery({
         queryKey: ['vehicleData'],
         queryFn: async () => {
-            const response = await axios.get('http://localhost:8000/api/cicar/obtenermodelosdisponibles');
-            console.log(response)
+            const response = await axios.get('http://localhost:8000/api/cicar/obtenermodelosdisponiblesengrupo', {
+                params: { zona: availableCarsFilters }
+            });
+            console.log("FETCH DATA CARS")
+            console.log(response.data)
             return response.data;
         },
 
@@ -88,22 +87,27 @@ export const ReservationPage = () => {
     });
 
     const handleChange = (event) => {
-        const { name, value } = event.target;
-        setAvailableCarsFilters(prevData => ({
-            ...prevData,
-            [name]: value
-        }));
+        const { value } = event.target;
+
+        const selectedOffice = JSON.parse(value);
+        const { Codigo, Zona } = selectedOffice;
+        
+        if ( !devMismaOficina ) {
+            setAvailableCarsFilters(prevData => ({
+                ...prevData,
+                [OfiDev]: value.Codigo,
+            }));
+        } else {
+            setAvailableCarsFilters(prevData => ({
+                ...prevData,
+                OfiEnt: Codigo,
+                OfiDev: Codigo,
+                Zona: Zona
+            }));
+        }
 
         console.log(availableCarsFilters)
     }
-
-    const handleZoneChange = (event) => {
-        const { value } = event.target;
-        setSelectedZone(value);  // Update the selected zone
-        console.log("handleZoneChange:", value);
-        console.log(availableCarsFilters);
-    };
-
 
     if( isOfficesLoading ) {
         return <h1> Loading Data... </h1>
@@ -131,14 +135,17 @@ export const ReservationPage = () => {
                     <option  value="" > Selecciona oficina de recogida</option>
                     {
                         data.map(office => (
-                            <option name="OfiEnt" value={office.Codigo}> { office.Nombre } </option>
+                            <option name="OfiEnt" value={JSON.stringify(office)}> { office.Nombre } </option>
                         ))
                     }
                 </select>
+                
+                <label>Devolucion Misma Oficina: </label>
+                <input type="checkbox" name="Baca" onChange={() => setDevMismaOficina(prevData => !prevData)} checked={ devMismaOficina } />
 
                 <label>Oficina de recogida: </label>
                 <select className='select' name="OfiDev" onChange={(event) => handleChange(event)}>
-                    <option  value="" > Selecciona oficina de recogida</option>
+                    <option value=""> Selecciona oficina de recogida </option>
                     {
                         data.map(office => (
                             <option name="OfiDev" value={office.Codigo}> { office.Nombre } </option>
@@ -155,10 +162,26 @@ export const ReservationPage = () => {
                 <label>Conductores adicionales: </label>
                 <input type="number" name="ConductoresAdicionales" onChange={(event) => handleChange(event)} className='select' value={ availableCarsFilters.ConductoresAdicionales } />
                 
-                <label>Baca: </label>
+                <label>Devolucion Misma Oficina: </label>
                 <input type="checkbox" name="Baca" onChange={(event) => handleChange(event)} value={ availableCarsFilters.Baca } />
             </div>
-        </>
         
+        <div>
+            {  AvailableCars && !isCarsLoading && !isCarsError ?
+
+                AvailableCars.ModeloArray.map(modelo => (
+                    <>
+                        <img src={`http${modelo.Thumbnail}`}  width={300} height={300} />
+                        <p> {modelo.Nombre} - Capacidad: {modelo.Capacidad} </p>
+                    </>
+                ))
+
+                :
+                <p>No Vehicles to display yet</p>
+                
+            }
+        </div>
+
+        </>
     )
 }
