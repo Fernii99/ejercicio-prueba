@@ -29,9 +29,6 @@ export const VehiclePage = () => {
     }
   )
 
-
- 
-
   useEffect(() => {
   }, [isEditMode]); // Trigger re-render when isEditMode changes
 

@@ -1,39 +1,29 @@
 import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
+import { useNavigate } from 'react-router-dom'
 
 
 export const ReservationPage = () => {
 
+    const navigate = useNavigate();
+
     const [availableCarsFilters, setAvailableCarsFilters] = useState({
-        'Idioma': "ES",
-        'Empresa': "K11",
-        'Usuario': "DitGes",
-        'Clave': "DitCan2023",
         'Tarifa': "",
-        'FechaInicio': Date.now(),
-        'FechaFin': Date.now(),
+        "Grupo": "",
+        'FechaInicio': null,
+        'HoraInicio': null,
+        'FechaFin': "",
+        'HoraFin': "",
         'Zona': "",
         'OfiEnt': "",
         'OfiDev': "",
         "EntHotel": "",
         "DevHotel": "",
-        'SillasBebe': 0, // Default or client-provided Categoria
-        'Elevadores': 0, // Default or client-provided SubCategoria
-        'ConductoresAdicionales': 0,
-        'Baca': false,
     });
     
-    const [selectedZone, setSelectedZone] = useState("");
-    const [devMismaOficina, setDevMismaOficina] = useState(false);
-
-    useEffect(() => {
-        if (selectedZone) {
-            fetchOfficesData();  // Fetch data for the updated zone
-        }
-    }, [selectedZone]);
-
    
+    const [devMismaOficina, setDevMismaOficina] = useState(true);
 
     const {isLoading, error, data} = useQuery({
         queryKey: ["zoneData"],
@@ -45,27 +35,7 @@ export const ReservationPage = () => {
         }
     })
 
-    const {
-        data: OfficeData,
-        isLoading: isOfficesLoading,
-        isError: isOfficesError,
-        refetch: fetchOfficesData
-    } = useQuery({
-        queryKey: ["officeData", selectedZone],
-        queryFn: async () => {
-            if (!selectedZone) {
-                return [];  // Return an empty array if no zone is selected
-            }
     
-            const response = await axios.get('http://localhost:8000/api/cicar/obtenerlistadeoficinasenzona', {
-                params: { zona: selectedZone }
-            });
-            console.log(response.data.offices);
-            return response.data.offices;
-        },
-        enabled: !!selectedZone,  // Enable query only if a zone is selected
-        refetchOnWindowFocus: false,  // Disable refetching when window is focused
-    });
 
     const {
         data: AvailableCars,
@@ -87,35 +57,51 @@ export const ReservationPage = () => {
     });
 
     const handleChange = (event) => {
-        const { value } = event.target;
-
-        const selectedOffice = JSON.parse(value);
-        const { Codigo, Zona } = selectedOffice;
-        
-        if ( !devMismaOficina ) {
-            setAvailableCarsFilters(prevData => ({
+        const { name, value } = event.target;
+    
+        setAvailableCarsFilters((prevData) => {
+            let updatedFilters = { ...prevData };
+    
+            // Check if it's an office selection and parse the value
+            if (name === "OfiEnt") {
+                const selectedOffice = JSON.parse(value); // Parse the office data
+                updatedFilters = {
+                    ...updatedFilters,
+                    OfiEnt: selectedOffice.Codigo,
+                    Zona: selectedOffice.Zona,  // Update the Zona if needed
+                };
+    
+                // If devMismaOficina is true, set OfiDev to match OfiEnt
+                if (devMismaOficina) {
+                    updatedFilters.OfiDev = selectedOffice.Codigo;
+                }
+            } else if (name === "OfiDev") {
+                updatedFilters.OfiDev = value; // Set OfiDev when devMismaOficina is false
+            } else {
+                // For other fields like FechaInicio, HoraInicio, etc.
+                updatedFilters[name] = value;
+            }
+            console.log(availableCarsFilters)
+    
+            return updatedFilters;
+        });
+    };
+    
+    // Checkbox change to toggle devMismaOficina
+    const handleCheckboxChange = () => {
+        setDevMismaOficina((prevValue) => {
+            const newValue = !prevValue;
+            
+            // Sync OfiDev with OfiEnt if devMismaOficina is checked
+            setAvailableCarsFilters((prevData) => ({
                 ...prevData,
-                [OfiDev]: value.Codigo,
+                OfiDev: newValue ? prevData.OfiEnt : "", // Clear OfiDev if unchecked
             }));
-        } else {
-            setAvailableCarsFilters(prevData => ({
-                ...prevData,
-                OfiEnt: Codigo,
-                OfiDev: Codigo,
-                Zona: Zona
-            }));
-        }
-
-        console.log(availableCarsFilters)
-    }
-
-    if( isOfficesLoading ) {
-        return <h1> Loading Data... </h1>
-    }
-
-    if( isOfficesError ) {
-        return console.log(error)
-    }
+    
+            console.log(availableCarsFilters)
+            return newValue;
+        });
+    };
 
     if( isLoading ) {
         return <h1> Loading Data... </h1>
@@ -123,6 +109,10 @@ export const ReservationPage = () => {
 
     if( error ) {
         return console.log(error)
+    }
+
+    const handleReservationClick = (model) => {
+        navigate('/reservation2', { state: { modelo: model }})
     }
 
     return (
@@ -141,46 +131,50 @@ export const ReservationPage = () => {
                 </select>
                 
                 <label>Devolucion Misma Oficina: </label>
-                <input type="checkbox" name="Baca" onChange={() => setDevMismaOficina(prevData => !prevData)} checked={ devMismaOficina } />
+                <input type="checkbox" name="Baca" onChange={() => handleCheckboxChange(prevData => !prevData)} checked={ devMismaOficina } />
 
-                <label>Oficina de recogida: </label>
-                <select className='select' name="OfiDev" onChange={(event) => handleChange(event)}>
+                <label style={{visibility: devMismaOficina ? 'hidden' : 'visible'}}>Oficina de recogida: </label>
+                <select className='select' name="OfiDev" onChange={(event) => handleChange(event)} style={{visibility: devMismaOficina ? 'hidden' : 'visible'}}> 
                     <option value=""> Selecciona oficina de recogida </option>
                     {
-                        data.map(office => (
-                            <option name="OfiDev" value={office.Codigo}> { office.Nombre } </option>
+                        data.map((office, index) => (
+                            <option key={index} name="OfiDev" value={office.Codigo}> { office.Nombre } </option>
                         ))
                     }
                 </select>
 
-                <label> Sillas de Bebe: </label>
-                <input type="number" name="SillasBebe" className='select' onChange={(event) => handleChange(event)} value={ availableCarsFilters.SillasBebe } />
-                
-                <label>Elevadores para ninños: </label>
-                <input type="number" name="Elevadores" className='select'  onChange={(event) => handleChange(event)} value={ availableCarsFilters.Elevadores } />
-                
-                <label>Conductores adicionales: </label>
-                <input type="number" name="ConductoresAdicionales" onChange={(event) => handleChange(event)} className='select' value={ availableCarsFilters.ConductoresAdicionales } />
-                
-                <label>Devolucion Misma Oficina: </label>
-                <input type="checkbox" name="Baca" onChange={(event) => handleChange(event)} value={ availableCarsFilters.Baca } />
+                <label>Día y Hora de recogida: </label>
+                <input type="date" name="FechaInicio" onChange={(event) => handleChange(event)}  />
+                <input type="time" name="HoraInicio" onChange={(event) => handleChange(event)}  />
+
+                <label>Día y Hora de Entrega: </label>
+                <input type="date" name="FechaFin" onChange={(event) => handleChange(event)} />
+                <input type="time" name="HoraFin" onChange={(event) => handleChange(event)} />
             </div>
         
-        <div>
-            {  AvailableCars && !isCarsLoading && !isCarsError ?
+            <div style={{display:'flex', flexWrap: 'wrap'}}>
+                {  AvailableCars && !isCarsLoading && !isCarsError ?
+                    
+                    AvailableCars.map(modelo => (
+                        <div style={{width: '32%', height: '400px', border: '1px solid white', marginBottom: '5px', display: 'flex', flexDirection: 'column', alignItems: 'start', padding: '5px',}}>
+                            <h4>{modelo.Nombre.toUpperCase()}</h4>
+                            <img src={`https://cicar.com/${modelo.Foto}`} width={'100%'}  height={250}/>
+                            <span>Precio Total:{modelo.Total}€</span>
+                            <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 40, alignItems: 'center'}}>
+                                <div style={{justifyContent: 'start'}}>
+                                    <p> Pasajeros: {modelo.Pax} <br/> Maletas: {modelo.Capacidad} </p>
+                                </div>
+                                <button style={{position: 'relative', bottom: 0, right: 0,  }} onClick={() => handleReservationClick(modelo)}> {!modelo.OnRequest && modelo.Disponible ? 'Reservar' : 'No Disponible'} </button>
+                            </div>    
+                        </div>
+                    ))
 
-                AvailableCars.ModeloArray.map(modelo => (
-                    <>
-                        <img src={`http${modelo.Thumbnail}`}  width={300} height={300} />
-                        <p> {modelo.Nombre} - Capacidad: {modelo.Capacidad} </p>
-                    </>
-                ))
+                    :
 
-                :
-                <p>No Vehicles to display yet</p>
-                
-            }
-        </div>
+                    <p>No Vehicles to display yet</p>
+                    
+                }
+            </div>
 
         </>
     )
