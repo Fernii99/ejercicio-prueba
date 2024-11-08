@@ -11,8 +11,8 @@ export const ReservationPage = () => {
     const [availableCarsFilters, setAvailableCarsFilters] = useState({
         'Tarifa': "",
         "Grupo": "",
-        'FechaInicio': null,
-        'HoraInicio': null,
+        'FechaInicio': "",
+        'HoraInicio': "",
         'FechaFin': "",
         'HoraFin': "",
         'Zona': "",
@@ -20,6 +20,7 @@ export const ReservationPage = () => {
         'OfiDev': "",
         "EntHotel": "",
         "DevHotel": "",
+        "Oficina": "",
     });
     
    
@@ -62,26 +63,32 @@ export const ReservationPage = () => {
         setAvailableCarsFilters((prevData) => {
             let updatedFilters = { ...prevData };
     
-            // Check if it's an office selection and parse the value
+            // Handle 'OfiEnt' selection
             if (name === "OfiEnt") {
-                const selectedOffice = JSON.parse(value); // Parse the office data
+                const selectedOffice = JSON.parse(value); // Parse the JSON string from the <select> option
                 updatedFilters = {
                     ...updatedFilters,
                     OfiEnt: selectedOffice.Codigo,
-                    Zona: selectedOffice.Zona,  // Update the Zona if needed
+                    Zona: selectedOffice.Zona,  // Assuming Zona is part of the office data
+                    Oficina: selectedOffice.Nombre
                 };
     
-                // If devMismaOficina is true, set OfiDev to match OfiEnt
+                // If devMismaOficina is true, synchronize OfiDev with OfiEnt
                 if (devMismaOficina) {
                     updatedFilters.OfiDev = selectedOffice.Codigo;
                 }
-            } else if (name === "OfiDev") {
-                updatedFilters.OfiDev = value; // Set OfiDev when devMismaOficina is false
-            } else {
-                // For other fields like FechaInicio, HoraInicio, etc.
+            } 
+            // Handle 'OfiDev' selection
+            else if (name === "OfiDev") {
+                const selectedOffice = JSON.parse(value); // Parse the JSON string for OfiDev
+                updatedFilters.OfiDev = selectedOffice.Codigo;
+            } 
+            // Handle other fields like FechaInicio, HoraInicio, etc.
+            else {
                 updatedFilters[name] = value;
             }
-            console.log(availableCarsFilters)
+    
+            console.log("Updated Filters:", updatedFilters);
     
             return updatedFilters;
         });
@@ -112,7 +119,9 @@ export const ReservationPage = () => {
     }
 
     const handleReservationClick = (model) => {
-        navigate('/reservation2', { state: { modelo: model }})
+        const fechaInicio = `${availableCarsFilters.FechaInicio}  ${availableCarsFilters.HoraInicio}`
+        const fechaFin = `${availableCarsFilters.FechaFin}  ${availableCarsFilters.HoraFin}`
+        navigate('/reservation2', { state: { modelo: model, fechaInicio: fechaInicio, fechaFin: fechaFin }})
     }
 
     return (
@@ -122,7 +131,7 @@ export const ReservationPage = () => {
             <div style={{display: 'flex', flexDirection: 'column', alignItems: 'center'}}>
                 <label>Oficina de recogida: </label>
                 <select className='select' name="OfiEnt" onChange={(event) => handleChange(event)}>
-                    <option  value="" > Selecciona oficina de recogida</option>
+                    <option  value=""> Selecciona oficina de recogida </option>
                     {
                         data.map(office => (
                             <option name="OfiEnt" value={JSON.stringify(office)}> { office.Nombre } </option>
@@ -138,7 +147,7 @@ export const ReservationPage = () => {
                     <option value=""> Selecciona oficina de recogida </option>
                     {
                         data.map((office, index) => (
-                            <option key={index} name="OfiDev" value={office.Codigo}> { office.Nombre } </option>
+                            <option key={index} name="OfiDev" value={JSON.stringify({ Codigo: office.Codigo, Nombre: office.Nombre })}> { office.Nombre } </option>
                         ))
                     }
                 </select>
@@ -164,7 +173,7 @@ export const ReservationPage = () => {
                                 <div style={{justifyContent: 'start'}}>
                                     <p> Pasajeros: {modelo.Pax} <br/> Maletas: {modelo.Capacidad} </p>
                                 </div>
-                                <button style={{position: 'relative', bottom: 0, right: 0,  }} onClick={() => handleReservationClick(modelo)}> {!modelo.OnRequest && modelo.Disponible ? 'Reservar' : 'No Disponible'} </button>
+                                <button style={{position: 'relative', bottom: 0, right: 0, backgroundColor: !modelo.OnRequest && modelo.Disponible ? 'darkorange' : 'black', color: !modelo.OnRequest && modelo.Disponible ? 'black' : 'white' }} onClick={() => handleReservationClick(modelo)}> {!modelo.OnRequest && modelo.Disponible ? 'Reservar' : 'No Disponible'} </button>
                             </div>    
                         </div>
                     ))

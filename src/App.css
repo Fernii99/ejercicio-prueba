@@ -33,7 +33,7 @@
   
   .select {
     height: 50px;
-    width: 15%;
+    width: 100%;
     font-size: 20px;
     border-radius: 5px;
     margin-bottom: 10px;
@@ -124,7 +124,7 @@
     margin: auto;
     height: 50px;
     font-size: 23px;
-    width: 40%;
+    width: 100px;
     border-radius: 5px;
     margin-bottom: 10px;
   }
