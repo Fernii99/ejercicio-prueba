@@ -30,13 +30,10 @@ export const ReservationPage = () => {
         queryKey: ["zoneData"],
         queryFn: async () => {
             const response = await axios.get('http://localhost:8000/api/cicar');
-            console.log("ZONES DATA")
-            console.log(response.data.OficinaArray)
+           
             return response.data.OficinaArray
         }
     })
-
-    
 
     const {
         data: AvailableCars,
@@ -49,8 +46,7 @@ export const ReservationPage = () => {
             const response = await axios.get('http://localhost:8000/api/cicar/obtenermodelosdisponiblesengrupo', {
                 params: { zona: availableCarsFilters }
             });
-            console.log("FETCH DATA CARS")
-            console.log(response.data)
+           
             return response.data;
         },
 
@@ -163,15 +159,15 @@ export const ReservationPage = () => {
         
             <div style={{display:'flex', flexWrap: 'wrap'}}>
                 {  AvailableCars && !isCarsLoading && !isCarsError ?
-                    
-                    AvailableCars.map(modelo => (
-                        <div style={{width: '32%', height: '400px', border: '1px solid white', marginBottom: '5px', display: 'flex', flexDirection: 'column', alignItems: 'start', padding: '5px',}}>
-                            <h4>{modelo.Nombre.toUpperCase()}</h4>
-                            <img src={`https://cicar.com/${modelo.Foto}`} width={'100%'}  height={250}/>
+
+                    AvailableCars.data.map(modelo => (
+                        <div style={{width: '32%',  border: '1px solid white', marginBottom: '5px', display: 'flex', flexDirection: 'column', alignItems: 'start', padding: '5px',}}>
+                            <h4>{modelo.Nombre} | Vendedor: {modelo.Supplier}</h4>
+                            <img src={modelo.Foto} width={'100%'}  height={250}/>
                             <span>Precio Total:{modelo.Total}€</span>
                             <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 40, alignItems: 'center'}}>
-                                <div style={{justifyContent: 'start'}}>
-                                    <p> Pasajeros: {modelo.Pax} <br/> Maletas: {modelo.Capacidad} </p>
+                                <div style={{justifyContent: 'start', width: '100%'}}>
+                                    <p>Pasajeros: {modelo.Capacidad} | Maletas: {modelo.Maletas } | {JSON.stringify(modelo.Anotation)} </p>
                                 </div>
                                 <button style={{position: 'relative', bottom: 0, right: 0, backgroundColor: !modelo.OnRequest && modelo.Disponible ? 'darkorange' : 'black', color: !modelo.OnRequest && modelo.Disponible ? 'black' : 'white' }} onClick={() => handleReservationClick(modelo)}> {!modelo.OnRequest && modelo.Disponible ? 'Reservar' : 'No Disponible'} </button>
                             </div>    
@@ -179,7 +175,7 @@ export const ReservationPage = () => {
                     ))
 
                     :
-
+                    
                     <p>No Vehicles to display yet</p>
                     
                 }
