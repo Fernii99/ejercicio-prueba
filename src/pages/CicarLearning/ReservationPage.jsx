@@ -2,11 +2,10 @@ import axios from 'axios'
 import React, { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
+import Slider from 'rc-slider';
 
 
 export const ReservationPage = () => {
-
-   
 
     const navigate = useNavigate();
 
@@ -116,21 +115,32 @@ export const ReservationPage = () => {
         });
     };
 
-    const calculateUniqueValues = () => {
-        const fieldsToCheck = ['Total', 'Supplier', 'CarType', 'Capacidad'];  // Define the fields you want to check
-        return AvailableCars.data.reduce((acc, vehicle) => {
-            Object.keys(vehicle).forEach((key) => {
-                if (fieldsToCheck.includes(key)) {  // Check if the key is in the fieldsToCheck array
+    const calculateUniqueValues = () => { 
+        const fieldsToCheck = ['Total', 'Supplier', 'CarType', 'Capacidad', 'TipoTarifa', 'Anotation']; // Define the fields you want to check
+    return AvailableCars.data.reduce((acc, vehicle) => {
+        Object.keys(vehicle).forEach((key) => {
+            if (fieldsToCheck.includes(key)) {
+                if (key === 'Anotation') {
+                    // Handle 'Anotation' specifically for 'Fuel'
                     if (!acc[key]) {
-                        acc[key] = new Set(); // Initialize a new Set for each key
+                        acc[key] = new Set(); // Initialize a Set for 'Anotation'
+                    }
+                    if (Array.isArray(vehicle[key]) && vehicle[key][0] ) {
+                        acc[key].add(vehicle[key][0]); // Add only the first value if it is 'Fuel'
+                    }
+                } else {
+                    // Handle other fields
+                    if (!acc[key]) {
+                        acc[key] = new Set(); // Initialize a Set for each key
                     }
                     acc[key].add(vehicle[key]); // Add the vehicle's value to the Set
                 }
-            });
-            return acc;
-        }, {});
-    }
-
+            }
+        });
+        return acc;
+    }, {});
+    };
+    
     useEffect(() => {
         console.log(AvailableCars)
         if (!isLoading && AvailableCars) {
@@ -170,7 +180,8 @@ export const ReservationPage = () => {
                     updatedData = updatedData.filter((item) => 
                         // Check if the item matches any value in any field
                         Object.entries(selectedOptions).some(([field, values]) =>
-                            values.some((value) => item[field] === value) // Match any value in the field
+                            values.some((value) => item[field] === value)// Match any value in the field
+                            
                         )
                     );
                 }
@@ -209,7 +220,7 @@ export const ReservationPage = () => {
         });
     };
 
-//LAS STEP - MAKE A RESERVATION OF A VEHICLE (MOVE TO NEXT SCREEN)
+    //LAS STEP - MAKE A RESERVATION OF A VEHICLE (MOVE TO NEXT SCREEN)
     const handleReservationClick = (model) => {
         const fechaInicio = `${availableCarsFilters.FechaInicio}  ${availableCarsFilters.HoraInicio}`
         const fechaFin = `${availableCarsFilters.FechaFin}  ${availableCarsFilters.HoraFin}`
@@ -266,12 +277,20 @@ export const ReservationPage = () => {
             <div style={{display:'flex', flexWrap: 'wrap', marginTop: 20}}>
                 <div style={{width: '25%', float: 'left' }}>
                     {Object.keys(filtersValues).length > 0 ? (
+                        
                         Object.entries(filtersValues).map(([title, values]) => (
-                            <div style={{ float: 'left', width: '60%'}}>
+                            <div style={{  width: '60%'}}>
                                 <h3 >{title}</h3>
+                                {title === "Total" && 
+                                    <div style={{display: 'flex', justifyContent: 'space-around'}}>
+                                        <h3>{Math.round(values[0])}</h3> <input type="range" min={0} max={2000} /><h3>{Math.round(values[values.length-1])}</h3>
+                                    </div>
+                                }
                                 {values.map((value, index) => (
+                                    value != null && title != "Total" &&
+                                    
                                     <>
-                                            <input type='checkbox' style={{ lineHeight: 1}} value={value} name={title} onClick={ (event) => handleFilterChange(event) } /> {value} <br/>
+                                        <input type='checkbox' style={{ lineHeight: 1}} value={value} name={title} onClick={ (event) => handleFilterChange(event) } /> {value} <br/>
                                     </>
                                 ))}
                             </div>
@@ -279,31 +298,42 @@ export const ReservationPage = () => {
                     ) : (
                         <p>No data available</p>
                     )}
+                    
                 </div>
                 <div style={{width: '75%', display: 'flex', flexWrap: 'wrap', gap: 5}}>
                     { filteredVehicles && !isCarsLoading && !isCarsError ?
                         filteredVehicles.map(modelo => (
-                            <div style={{width: '32%',  border: '1px solid white', marginBottom: '5px', display: 'flex', flexDirection: 'column', alignItems: 'start', padding: '5px' }}>
+                            <div style={{width: '100%',  border: '1px solid white', marginBottom: '5px', display: 'flex', flexDirection: 'column', alignItems: 'start', padding: '5px' }}>
                                 <h4>{modelo.Nombre} | Vendedor: {modelo.Supplier}</h4>
-                                <img src={modelo.Foto} width={'100%'}  height={250}/>
-                                <span>Precio Total:{modelo.Total}€</span>
-                                <div style={{display: 'flex', justifyContent: 'space-between', width: '100%', marginTop: 40, alignItems: 'center'}}>
-                                    <div style={{justifyContent: 'start', width: '100%'}}>
-                                        <p>Pasajeros: {modelo.Capacidad} | Maletas: {modelo.Maletas } | {modelo.Anotation && modelo.Anotation.length > 0 ? modelo.Anotation[0] : "No information available"} </p>
+                                <div style={{display: 'flex', width: '100%'}}>
+                                    <img src={modelo.Foto} width={'20%'}  height={250}/>
+                                    <div style={{width: '80%', marginLeft: 10 }}>
+                                        <div style={{justifyContent: 'space-around', display: 'flex', width: '95%',  border: '1px solid',marginBottom: 10, borderRadius: 5 }}>
+                                            <p>{modelo.Capacidad}</p>
+                                            <p>{modelo.Maletas}</p>
+                                            <p>{modelo.Puertas}</p>
+                                            <p>{modelo.Aire === "Y" ? "Si" : "No"}</p>
+                                            <p>{modelo.IsAutomatic === "Y" ? "Automatico" : "Manual"}</p>
+                                        </div>
+                                        <div style={{ width: '95%',display: 'flex', flexDirection: 'row', border: '1px solid', flexWrap:'wrap', borderRadius: 5 }}>
+                                            <p>{modelo.tipoTarifa}</p>
+                                            {modelo.Anotation.map( note => (
+                                                <div style={{width: '45%'}}>
+                                                    <p style={{lineHeight: '1px'}}>{note}</p>
+                                                </div>
+                                            ))}
+                                        </div>
                                     </div>
-                                    <button style={{position: 'relative', bottom: 0, right: 0, backgroundColor: !modelo.OnRequest && modelo.Disponible ? 'darkorange' : 'black', color: !modelo.OnRequest && modelo.Disponible ? 'black' : 'white' }} onClick={() => handleReservationClick(modelo)}> {!modelo.OnRequest && modelo.Disponible ? 'Reservar' : 'No Disponible'} </button>
-                                </div>    
+                                 </div>
                             </div>
                         ))
 
                         :
                         
                         <p>No Vehicles to display yet</p>
-                        
                     }
                 </div>
             </div>
-
         </>
     )
 }
