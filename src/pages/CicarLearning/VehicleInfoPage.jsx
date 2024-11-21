@@ -25,7 +25,7 @@ export const VehicleInfoPage = () => {
         </div>
         <div>
           <h2>2º Modelo del vehiculo</h2>
-          <img src={`https://cicar.com/${modelo.Thumbnail}`} width={150} height={90} />
+          <img src={modelo.Foto} width={150} height={90} />
           <p style={{lineHeight: 0}}>{modelo.Nombre}</p>
         </div>
         <div>
@@ -67,7 +67,6 @@ export const VehicleInfoPage = () => {
             </select>
 
             <h4>También son gratuitos los siguientes servicios:</h4>
-
               <p style={{lineHeight: 0}}>Kilometraje ilimitado</p>
               <p style={{lineHeight: 0}}>Segundo conductor</p>
               <p style={{lineHeight: 0}}>Entrega/devolución en hotel (*)</p>
@@ -78,12 +77,8 @@ export const VehicleInfoPage = () => {
           <div style={{display: 'flex', flexDirection:'column', flexWrap: 'wrap'}}>
             <h3> DATOS ADICIONALES </h3>
             Nº de Vuelo/Crucero <input type='trea'  className='select'/>
-            <small style={{ color: 'orange'}}>Recomendable informar del Nº Vuelo</small><br/>
-
-            
+            <small style={{ color: 'orange'}}> Recomendable informar del Nº Vuelo </small><br/>
             Direccion Temporal <input type='trea'  className='select'/><br/>
-
-          
             Nº de Vuelo/Crucero <input type='trea'  className='select'/><br/>
           </div>
         </div>

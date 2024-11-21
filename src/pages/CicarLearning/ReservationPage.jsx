@@ -25,8 +25,8 @@ export const ReservationPage = () => {
     });
     
     const [filtersValues, setFiltersValues ] = useState([])
-    const [selectedOptions, setSelectedOptions] = useState([]);
-    const[filteredVehicles, setFilteredVehicles ] = useState(null)
+    const [selectedOptions, setSelectedOptions ] = useState([]);
+    const [filteredVehicles, setFilteredVehicles ] = useState(null)
 
     
 
@@ -51,8 +51,12 @@ export const ReservationPage = () => {
         queryKey: ['vehicleData'],
         
         queryFn: async () => {
-            const response = await axios.get('http://localhost:8000/api/cicar/obtenermodelosdisponiblesengrupo', {
-                params: { zona: availableCarsFilters }
+            console.log(availableCarsFilters)
+            const response = await axios.get('http://localhost:8000/api/cicar/obtenerlistacombinada', {
+                params: { zona: availableCarsFilters },
+                headers: {
+                    'Content-Type': 'application/json',
+                },
             });
             return response.data;
         },
@@ -89,7 +93,7 @@ export const ReservationPage = () => {
                 updatedFilters.OfiDev = selectedOffice.Codigo;
             } 
             // Handle other fields like FechaInicio, HoraInicio, etc.
-            else {
+            else { 
                 updatedFilters[name] = value;
             }
     
@@ -116,7 +120,8 @@ export const ReservationPage = () => {
     };
 
     const calculateUniqueValues = () => { 
-        const fieldsToCheck = ['Total', 'Supplier', 'CarType', 'Capacidad', 'TipoTarifa', 'Anotation']; // Define the fields you want to check
+    const fieldsToCheck = ['Total', 'Supplier', 'CarType', 'Capacidad', 'TipoTarifa', 'Anotation']; // Define the fields you want to check
+
     return AvailableCars.data.reduce((acc, vehicle) => {
         Object.keys(vehicle).forEach((key) => {
             if (fieldsToCheck.includes(key)) {
@@ -138,7 +143,7 @@ export const ReservationPage = () => {
             }
         });
         return acc;
-    }, {});
+        }, {});
     };
     
     useEffect(() => {
@@ -237,6 +242,22 @@ export const ReservationPage = () => {
         return console.log(error)
     }
 
+    const trapezoidStyle = {
+        width: '80%',
+        height: '80px',
+        backgroundColor: 'green',
+        clipPath: 'polygon(0% 0%, 80% 0%, 100% 100%, 20% 100%)',
+        display: 'flex',
+        justifyContent: 'center',
+        alignItems: 'center',
+        color: 'white',
+        textAlign: 'center',
+        borderRadius: 'none',
+        fontSize: '10px',
+        paddingLeft: '20px',
+        paddingRight: '20px',
+    };
+
     return (
         <>
             <h1>Busqueda de Coches</h1>
@@ -277,7 +298,6 @@ export const ReservationPage = () => {
             <div style={{display:'flex', flexWrap: 'wrap', marginTop: 20}}>
                 <div style={{width: '25%', float: 'left' }}>
                     {Object.keys(filtersValues).length > 0 ? (
-                        
                         Object.entries(filtersValues).map(([title, values]) => (
                             <div style={{  width: '60%'}}>
                                 <h3 >{title}</h3>
@@ -288,7 +308,6 @@ export const ReservationPage = () => {
                                 }
                                 {values.map((value, index) => (
                                     value != null && title != "Total" &&
-                                    
                                     <>
                                         <input type='checkbox' style={{ lineHeight: 1}} value={value} name={title} onClick={ (event) => handleFilterChange(event) } /> {value} <br/>
                                     </>
@@ -309,28 +328,30 @@ export const ReservationPage = () => {
                                     <img src={modelo.Foto} width={'20%'}  height={250}/>
                                     <div style={{width: '80%', marginLeft: 10 }}>
                                         <div style={{justifyContent: 'space-around', display: 'flex', width: '95%',  border: '1px solid',marginBottom: 10, borderRadius: 5 }}>
-                                            <p>{modelo.Capacidad}</p>
-                                            <p>{modelo.Maletas}</p>
-                                            <p>{modelo.Puertas}</p>
-                                            <p>{modelo.Aire === "Y" ? "Si" : "No"}</p>
-                                            <p>{modelo.IsAutomatic === "Y" ? "Automatico" : "Manual"}</p>
+                                            <p>Capacidad: {modelo.Capacidad}</p>
+                                            <p>Espacio Maletas: {modelo.Maletas}</p>
+                                            <p>Puertas: {modelo.Puertas}</p>
+                                            <p>Aire: {modelo.Aire === "Y" ? "Si" : "No"}</p>
+                                            <p>Direccion: {modelo.IsAutomatic === "Y" ? "Automatico" : "Manual"}</p>
                                         </div>
-                                        <div style={{ width: '95%',display: 'flex', flexDirection: 'row', border: '1px solid', flexWrap:'wrap', borderRadius: 5 }}>
+                                        <div style={{ width: '95%', display: 'flex', flexDirection: 'row', border: '1px solid', flexWrap:'wrap', borderRadius: 5 }}>
                                             <p>{modelo.tipoTarifa}</p>
                                             {modelo.Anotation.map( note => (
                                                 <div style={{width: '45%'}}>
-                                                    <p style={{lineHeight: '1px'}}>{note}</p>
+                                                    <p >{note}</p>
                                                 </div>
                                             ))}
                                         </div>
+                                        <button onClick={ () => handleReservationClick(modelo) }>Reservar</button>
                                     </div>
-                                 </div>
+                                </div>
                             </div>
                         ))
 
                         :
                         
                         <p>No Vehicles to display yet</p>
+
                     }
                 </div>
             </div>
