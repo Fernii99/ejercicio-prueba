@@ -40,7 +40,6 @@ export const ReservationPage = () => {
             return response.data.OficinaArray
         }
     })
-
     
     const {
         data: AvailableCars,
@@ -51,7 +50,6 @@ export const ReservationPage = () => {
         queryKey: ['vehicleData'],
         
         queryFn: async () => {
-            console.log(availableCarsFilters)
             const response = await axios.get('http://localhost:8000/api/cicar/obtenerlistacombinada', {
                 params: { zona: availableCarsFilters },
                 headers: {
@@ -63,8 +61,6 @@ export const ReservationPage = () => {
 
         enabled: false, 
     });
-    
-    
 
     const handleChange = (event) => {
         const { name, value } = event.target;
@@ -96,9 +92,6 @@ export const ReservationPage = () => {
             else { 
                 updatedFilters[name] = value;
             }
-    
-            console.log("Updated Filters:", updatedFilters);
-    
             return updatedFilters;
         });
     };
@@ -114,7 +107,6 @@ export const ReservationPage = () => {
                 OfiDev: newValue ? prevData.OfiEnt : "", // Clear OfiDev if unchecked
             }));
     
-            console.log(availableCarsFilters)
             return newValue;
         });
     };
@@ -147,7 +139,7 @@ export const ReservationPage = () => {
     };
     
     useEffect(() => {
-        console.log(AvailableCars)
+
         if (!isLoading && AvailableCars) {
             const uniqueValues = calculateUniqueValues();
 
@@ -155,75 +147,81 @@ export const ReservationPage = () => {
               Object.entries(uniqueValues).map(([key, valueSet]) => [key, Array.from(valueSet)])
             );
         
-            console.log(uniqueValuesArray);
-
             // Update component state
             setFiltersValues(uniqueValuesArray);
         }
+
     }, [isLoading, AvailableCars]);
 
-    useEffect( () => {
+    useEffect(() => {
         setFilteredVehicles(AvailableCars)
     }, [AvailableCars])
     
-    useEffect( () => {
-        console.log(filteredVehicles)
-    }, [])
-
     useEffect(() => {
-        console.log("Selected Options:", selectedOptions);
-    
-        // Function to filter data based on selected filters
         const applyFilters = () => {
+
             if (!AvailableCars?.data) return; // Ensure data exists before filtering
     
-            let updatedData = [...AvailableCars.data]; // Clone the data to avoid mutation
+            const updatedData = AvailableCars.data.filter((item) => {
+                return Object.entries(selectedOptions).every(([field, value]) => {
+                    if (value.length === 0) {
+                        return true; // No filter applied for this field
+                    }
     
-            // Iterate through each selected filter
-            Object.entries(selectedOptions).forEach(([field, values]) => {
-                if (Object.keys(selectedOptions).length > 0) {
-                    updatedData = updatedData.filter((item) => 
-                        // Check if the item matches any value in any field
-                        Object.entries(selectedOptions).some(([field, values]) =>
-                            values.some((value) => item[field] === value)// Match any value in the field
-                            
-                        )
-                    );
-                }
+                    if (field === 'Anotation' && Array.isArray(item.Anotation)) {
+                        // Check if any value in `selectedOptions['Anotation']` matches `item.Anotation`
+                        return value.some((val) => item.Anotation.includes(val));
+                    }
+    
+                    if (field === 'Total') {
+                        // Ensure `value` is a number for comparison
+                        return item.Total > 0 && item.Total <= value; // Use `item.Total` (case-sensitive)
+                    }
+    
+                    // Handle other fields (general fields)
+                    return value.includes(item[field]);
+                });
             });
-    
+            console.log(updatedData)
             setFilteredVehicles(updatedData); // Update the filtered data
         };
     
         applyFilters();
-    }, [selectedOptions, AvailableCars]);
+    }, [selectedOptions, AvailableCars, setFilteredVehicles]);
 
     const handleFilterChange = (event) => {
         const { name, value, checked } = event.target;
-
+    
         setSelectedOptions((prev) => {
-            const updatedOptions = { ...prev }; // Clone the previous state
-
-            // Ensure that the selected value for the filter is not already present
-            if (checked) {
-
+            const updatedOptions = { ...prev };
+    
+            if (name === "Total") {
+                // Convert the range value to a number
+                updatedOptions[name] = Number(value); // Parse as a number
+            } else if (checked) {
                 if (!updatedOptions[name]) {
-                    updatedOptions[name] = [];  // Initialize the array if it doesn't exist
+                    updatedOptions[name] = [];
                 }
-
-                // Add value only if it's not already present
                 if (!updatedOptions[name].includes(value)) {
-                    updatedOptions[name].push(value); // Add the value
+                    updatedOptions[name].push(value);
                 }
-
             } else {
-                // Remove value from the array if unchecked
-                updatedOptions[name] = updatedOptions[name]?.filter((option) => option !== value);
+                if (Array.isArray(updatedOptions[name])) {
+                    updatedOptions[name] = updatedOptions[name].filter((option) => option !== value);
+    
+                    if (updatedOptions[name].length === 0) {
+                        delete updatedOptions[name];
+                    }
+                }
             }
-
+    
             return updatedOptions;
         });
     };
+
+
+
+    const filteredResults = filteredVehicles || [];
 
     //LAS STEP - MAKE A RESERVATION OF A VEHICLE (MOVE TO NEXT SCREEN)
     const handleReservationClick = (model) => {
@@ -232,8 +230,7 @@ export const ReservationPage = () => {
         navigate('/reservation2', { state: { modelo: model, fechaInicio: fechaInicio, fechaFin: fechaFin }})
     }
 
-
-//COMPROBATIONS OF DATA IS RETRIVED ON THE FIRST LOAD OR IF THERE IS AN ERROR OR SOMETHING
+    //COMPROBATIONS OF DATA IS RETRIVED ON THE FIRST LOAD OR IF THERE IS AN ERROR OR SOMETHING
     if( isLoading ) {
         return <h1> Loading Data... </h1>
     }
@@ -242,21 +239,6 @@ export const ReservationPage = () => {
         return console.log(error)
     }
 
-    const trapezoidStyle = {
-        width: '80%',
-        height: '80px',
-        backgroundColor: 'green',
-        clipPath: 'polygon(0% 0%, 80% 0%, 100% 100%, 20% 100%)',
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        color: 'white',
-        textAlign: 'center',
-        borderRadius: 'none',
-        fontSize: '10px',
-        paddingLeft: '20px',
-        paddingRight: '20px',
-    };
 
     return (
         <>
@@ -300,12 +282,12 @@ export const ReservationPage = () => {
                     {Object.keys(filtersValues).length > 0 ? (
                         Object.entries(filtersValues).map(([title, values]) => (
                             <div style={{  width: '60%'}}>
-                                <h3 >{title}</h3>
-                                {title === "Total" && 
+                                {title === "Anotation" ? <h3> Politica de combustible</h3> : <h3>{title}</h3>  }
+                                {title === "Total" &&
                                     <div style={{display: 'flex', justifyContent: 'space-around'}}>
-                                        <h3>{Math.round(values[0])}</h3> <input type="range" min={0} max={2000} /><h3>{Math.round(values[values.length-1])}</h3>
+                                        <h3>{Math.round(values[0])}</h3> <input type="range" min={Math.round(values[0])} max={Math.round(values[values.length-1])} name="Total" onMouseUp={(event) => handleFilterChange(event)} /><h3>{Math.round(values[values.length-1])}</h3>
                                     </div>
-                                }
+                                }                    
                                 {values.map((value, index) => (
                                     value != null && title != "Total" &&
                                     <>
@@ -320,8 +302,9 @@ export const ReservationPage = () => {
                     
                 </div>
                 <div style={{width: '75%', display: 'flex', flexWrap: 'wrap', gap: 5}}>
-                    { filteredVehicles && !isCarsLoading && !isCarsError ?
-                        filteredVehicles.map(modelo => (
+                    {filteredResults  && !isCarsLoading && !isCarsError ?
+                        filteredResults.map(modelo => (
+                            modelo.Status === "Available" &&
                             <div style={{width: '100%',  border: '1px solid white', marginBottom: '5px', display: 'flex', flexDirection: 'column', alignItems: 'start', padding: '5px' }}>
                                 <h4>{modelo.Nombre} | Vendedor: {modelo.Supplier}</h4>
                                 <div style={{display: 'flex', width: '100%'}}>
@@ -342,7 +325,10 @@ export const ReservationPage = () => {
                                                 </div>
                                             ))}
                                         </div>
-                                        <button onClick={ () => handleReservationClick(modelo) }>Reservar</button>
+                                        <div>
+                                            <p>Precio total, tasas incluidas: {modelo.Total}€</p>
+                                        </div>
+                                            <button onClick={ () => handleReservationClick(modelo) }>{modelo.Status}</button>
                                     </div>
                                 </div>
                             </div>
