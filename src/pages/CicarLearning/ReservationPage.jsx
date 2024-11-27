@@ -3,36 +3,21 @@ import React, { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import { useNavigate } from 'react-router-dom'
 import Slider from 'rc-slider';
+import { FiltersComponent } from '../../components/CicarLearning/FiltersComponent';
+import { ReservationHook } from '../../hooks/ReservationHook';
 
 
 export const ReservationPage = () => {
 
+    const { filters, setFilters, selectedOptions, calculateUniqueValues, handleChange, carsParameters, setCarsParameters, devMismaOficina, setDevMismaOficina } = ReservationHook();
+
     const navigate = useNavigate();
 
-    const [carsParameters, setCarsParameters] = useState({
-        'Tarifa': "",
-        "Grupo": "",
-        'FechaInicio': "",
-        'HoraInicio': "",
-        'FechaFin': "",
-        'HoraFin': "",
-        'Zona': "",
-        'OfiEnt': "",
-        'OfiDev': "",
-        "EntHotel": "",
-        "DevHotel": "",
-        "Oficina": "",
-    });
+    const [filtersValues, setFiltersValues ] = useState([]);
 
-
+    const [filteredVehicles, setFilteredVehicles ] = useState(null);
     
-    const [filtersValues, setFiltersValues ] = useState([])
-    const [selectedOptions, setSelectedOptions ] = useState([]);
-    const [filteredVehicles, setFilteredVehicles ] = useState(null)
-
     
-
-    const [devMismaOficina, setDevMismaOficina] = useState(true);
 
     const {isLoading, error, data} = useQuery({
         queryKey: ["zoneData"],
@@ -64,39 +49,7 @@ export const ReservationPage = () => {
         enabled: false, 
     });
 
-    const handleChange = (event) => {
-        const { name, value } = event.target;
     
-        setCarsParameters((prevData) => {
-            let updatedFilters = { ...prevData };
-    
-            // Handle 'OfiEnt' selection
-            if (name === "OfiEnt") {
-                const selectedOffice = JSON.parse(value); // Parse the JSON string from the <select> option
-                updatedFilters = {
-                    ...updatedFilters,
-                    OfiEnt: selectedOffice.Codigo,
-                    Zona: selectedOffice.Zona,  // Assuming Zona is part of the office data
-                    Oficina: selectedOffice.Nombre
-                };
-    
-                // If devMismaOficina is true, synchronize OfiDev with OfiEnt
-                if (devMismaOficina) {
-                    updatedFilters.OfiDev = selectedOffice.Codigo;
-                }
-            } 
-            // Handle 'OfiDev' selection
-            else if (name === "OfiDev") {
-                const selectedOffice = JSON.parse(value); // Parse the JSON string for OfiDev
-                updatedFilters.OfiDev = selectedOffice.Codigo;
-            } 
-            // Handle other fields like FechaInicio, HoraInicio, etc.
-            else { 
-                updatedFilters[name] = value;
-            }
-            return updatedFilters;
-        });
-    };
     
     // Checkbox change to toggle devMismaOficina
     const handleCheckboxChange = () => {
@@ -113,50 +66,32 @@ export const ReservationPage = () => {
         });
     };
 
-    const calculateUniqueValues = () => { 
-    const fieldsToCheck = ['Total', 'Supplier', 'CarType', 'Capacidad', 'TipoTarifa', 'Anotation']; // Define the fields you want to check
-
-    return AvailableCars.data.reduce((acc, vehicle) => {
-        Object.keys(vehicle).forEach((key) => {
-            if (fieldsToCheck.includes(key)) {
-                if (key === 'Anotation') {
-                    // Handle 'Anotation' specifically for 'Fuel'
-                    if (!acc[key]) {
-                        acc[key] = new Set(); // Initialize a Set for 'Anotation'
-                    }
-                    if (Array.isArray(vehicle[key]) && vehicle[key][0] ) {
-                        acc[key].add(vehicle[key][0]); // Add only the first value if it is 'Fuel'
-                    }
-                } else {
-                    // Handle other fields
-                    if (!acc[key]) {
-                        acc[key] = new Set(); // Initialize a Set for each key
-                    }
-                    acc[key].add(vehicle[key]); // Add the vehicle's value to the Set
-                }
-            }
-        });
-        return acc;
-        }, {});
-    };
-    
+    /***********************************************************
+    ************* Generation of the different filters **********
+    ***********************************************************/
     useEffect(() => {
-
+    
         if (!isLoading && AvailableCars) {
-            const uniqueValues = calculateUniqueValues();
-
+            const uniqueValues = calculateUniqueValues(AvailableCars);
             const uniqueValuesArray = Object.fromEntries(
               Object.entries(uniqueValues).map(([key, valueSet]) => [key, Array.from(valueSet)])
             );
-        
             // Update component state
-            setFiltersValues(uniqueValuesArray);
+            setFilters(uniqueValuesArray);
         }
 
     }, [isLoading, AvailableCars]);
 
+    /***********************************************************
+    ******** End of Generation of the different filters ********
+    ***********************************************************/
+
     useEffect(() => {
-        setFilteredVehicles(AvailableCars)
+        console.log(filters);
+    }, [filters])
+
+    useEffect(() => {
+        setFilteredVehicles(AvailableCars);
     }, [AvailableCars])
     
     useEffect(() => {
@@ -191,35 +126,7 @@ export const ReservationPage = () => {
         applyFilters();
     }, [selectedOptions, AvailableCars, setFilteredVehicles]);
 
-    const handleFilterChange = (event) => {
-        const { name, value, checked } = event.target;
     
-        setSelectedOptions((prev) => {
-            const updatedOptions = { ...prev };
-    
-            if (name === "Total") {
-                // Convert the range value to a number
-                updatedOptions[name] = Number(value); // Parse as a number
-            } else if (checked) {
-                if (!updatedOptions[name]) {
-                    updatedOptions[name] = [];
-                }
-                if (!updatedOptions[name].includes(value)) {
-                    updatedOptions[name].push(value);
-                }
-            } else {
-                if (Array.isArray(updatedOptions[name])) {
-                    updatedOptions[name] = updatedOptions[name].filter((option) => option !== value);
-    
-                    if (updatedOptions[name].length === 0) {
-                        delete updatedOptions[name];
-                    }
-                }
-            }
-            console.log(updatedOptions)
-            return updatedOptions;
-        });
-    };
 
     const filteredResults = filteredVehicles || [];
 
@@ -281,27 +188,8 @@ export const ReservationPage = () => {
         
             <div style={{display:'flex', flexWrap: 'wrap', marginTop: 20}}>
                 <div style={{width: '25%', float: 'left' }}>
-                    {Object.keys(filtersValues).length > 0 ? (
-                        Object.entries(filtersValues).map(([title, values]) => (
-                            <div style={{  width: '60%'}}>
-                                { title === "Anotation" ? <h3> Politica de combustible</h3> : <h3>{title}</h3>  }
-                                { title === "Total" &&
-                                    <>
-                                        <div style={{display: 'flex', justifyContent: 'space-around', height: 35}}>
-                                            <h3 style={{lineHeight: 0}}>{Math.round(values[0])  + "€" }</h3> <input type="range" min={Math.round(values[0])} max={Math.round(values[values.length-1]) } name="Total" onMouseUp={(event) => handleFilterChange(event)} /><h3 style={{lineHeight: 0}}>{Math.round(values[values.length-1]) + "€" }</h3>
-                                        </div>
-                                        <p>Precio máximo: {selectedOptions.Total}€ </p>
-                                    </>
-                                }
-                                {values.map((value, index) => (
-                                    value != null && title != "Total" &&
-                                    <>
-                                        <input type='checkbox' style={{ lineHeight: 1 }} value={value} name={title} onClick={ (event) => handleFilterChange(event) } /> {value} <br/>
-                                    </>
-                                ))}
-
-                            </div>
-                        ))
+                    {Object.keys(filters).length > 0 ? (
+                         <FiltersComponent />
                     ) : (
                         <p>No data available</p>
                     )}
