@@ -9,7 +9,7 @@ export const ReservationPage = () => {
 
     const navigate = useNavigate();
 
-    const [availableCarsFilters, setAvailableCarsFilters] = useState({
+    const [carsParameters, setCarsParameters] = useState({
         'Tarifa': "",
         "Grupo": "",
         'FechaInicio': "",
@@ -23,6 +23,8 @@ export const ReservationPage = () => {
         "DevHotel": "",
         "Oficina": "",
     });
+
+
     
     const [filtersValues, setFiltersValues ] = useState([])
     const [selectedOptions, setSelectedOptions ] = useState([]);
@@ -51,7 +53,7 @@ export const ReservationPage = () => {
         
         queryFn: async () => {
             const response = await axios.get('http://localhost:8000/api/cicar/obtenerlistacombinada', {
-                params: { zona: availableCarsFilters },
+                params: { zona: carsParameters },
                 headers: {
                     'Content-Type': 'application/json',
                 },
@@ -65,7 +67,7 @@ export const ReservationPage = () => {
     const handleChange = (event) => {
         const { name, value } = event.target;
     
-        setAvailableCarsFilters((prevData) => {
+        setCarsParameters((prevData) => {
             let updatedFilters = { ...prevData };
     
             // Handle 'OfiEnt' selection
@@ -102,7 +104,7 @@ export const ReservationPage = () => {
             const newValue = !prevValue;
             
             // Sync OfiDev with OfiEnt if devMismaOficina is checked
-            setAvailableCarsFilters((prevData) => ({
+            setCarsParameters((prevData) => ({
                 ...prevData,
                 OfiDev: newValue ? prevData.OfiEnt : "", // Clear OfiDev if unchecked
             }));
@@ -214,21 +216,21 @@ export const ReservationPage = () => {
                     }
                 }
             }
-    
+            console.log(updatedOptions)
             return updatedOptions;
         });
     };
-
-
 
     const filteredResults = filteredVehicles || [];
 
     //LAS STEP - MAKE A RESERVATION OF A VEHICLE (MOVE TO NEXT SCREEN)
     const handleReservationClick = (model) => {
-        const fechaInicio = `${availableCarsFilters.FechaInicio}  ${availableCarsFilters.HoraInicio}`
-        const fechaFin = `${availableCarsFilters.FechaFin}  ${availableCarsFilters.HoraFin}`
+        const fechaInicio = `${carsParameters.FechaInicio}  ${carsParameters.HoraInicio}`
+        const fechaFin = `${carsParameters.FechaFin}  ${carsParameters.HoraFin}`
         navigate('/reservation2', { state: { modelo: model, fechaInicio: fechaInicio, fechaFin: fechaFin }})
     }
+
+
 
     //COMPROBATIONS OF DATA IS RETRIVED ON THE FIRST LOAD OR IF THERE IS AN ERROR OR SOMETHING
     if( isLoading ) {
@@ -282,24 +284,27 @@ export const ReservationPage = () => {
                     {Object.keys(filtersValues).length > 0 ? (
                         Object.entries(filtersValues).map(([title, values]) => (
                             <div style={{  width: '60%'}}>
-                                {title === "Anotation" ? <h3> Politica de combustible</h3> : <h3>{title}</h3>  }
-                                {title === "Total" &&
-                                    <div style={{display: 'flex', justifyContent: 'space-around'}}>
-                                        <h3>{Math.round(values[0])}</h3> <input type="range" min={Math.round(values[0])} max={Math.round(values[values.length-1])} name="Total" onMouseUp={(event) => handleFilterChange(event)} /><h3>{Math.round(values[values.length-1])}</h3>
-                                    </div>
-                                }                    
+                                { title === "Anotation" ? <h3> Politica de combustible</h3> : <h3>{title}</h3>  }
+                                { title === "Total" &&
+                                    <>
+                                        <div style={{display: 'flex', justifyContent: 'space-around', height: 35}}>
+                                            <h3 style={{lineHeight: 0}}>{Math.round(values[0])  + "€" }</h3> <input type="range" min={Math.round(values[0])} max={Math.round(values[values.length-1]) } name="Total" onMouseUp={(event) => handleFilterChange(event)} /><h3 style={{lineHeight: 0}}>{Math.round(values[values.length-1]) + "€" }</h3>
+                                        </div>
+                                        <p>Precio máximo: {selectedOptions.Total}€ </p>
+                                    </>
+                                }
                                 {values.map((value, index) => (
                                     value != null && title != "Total" &&
                                     <>
-                                        <input type='checkbox' style={{ lineHeight: 1}} value={value} name={title} onClick={ (event) => handleFilterChange(event) } /> {value} <br/>
+                                        <input type='checkbox' style={{ lineHeight: 1 }} value={value} name={title} onClick={ (event) => handleFilterChange(event) } /> {value} <br/>
                                     </>
                                 ))}
+
                             </div>
                         ))
                     ) : (
                         <p>No data available</p>
                     )}
-                    
                 </div>
                 <div style={{width: '75%', display: 'flex', flexWrap: 'wrap', gap: 5}}>
                     {filteredResults  && !isCarsLoading && !isCarsError ?
