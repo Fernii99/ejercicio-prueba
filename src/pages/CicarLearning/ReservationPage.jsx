@@ -49,82 +49,35 @@ export const ReservationPage = () => {
         enabled: false, 
     });
 
-    
-    
-    // Checkbox change to toggle devMismaOficina
-    const handleCheckboxChange = () => {
-        setDevMismaOficina((prevValue) => {
-            const newValue = !prevValue;
-            
-            // Sync OfiDev with OfiEnt if devMismaOficina is checked
-            setCarsParameters((prevData) => ({
-                ...prevData,
-                OfiDev: newValue ? prevData.OfiEnt : "", // Clear OfiDev if unchecked
-            }));
-    
-            return newValue;
-        });
-    };
-
     /***********************************************************
     ************* Generation of the different filters **********
     ***********************************************************/
     useEffect(() => {
-    
         if (!isLoading && AvailableCars) {
-            const uniqueValues = calculateUniqueValues(AvailableCars);
-            const uniqueValuesArray = Object.fromEntries(
-              Object.entries(uniqueValues).map(([key, valueSet]) => [key, Array.from(valueSet)])
-            );
-            // Update component state
-            setFilters(uniqueValuesArray);
+            const uniqueValuesArray = calculateUniqueValues(AvailableCars);
+    
+            console.log('Unique Values:', uniqueValuesArray); // Debugging
+            setFilters(uniqueValuesArray); // State update
         }
-
     }, [isLoading, AvailableCars]);
+
 
     /***********************************************************
     ******** End of Generation of the different filters ********
     ***********************************************************/
-
     useEffect(() => {
-        console.log(filters);
+        console.log("FILTERS UPDATED RESERVATION PAGE")
+        console.log(filters)
     }, [filters])
 
     useEffect(() => {
-        setFilteredVehicles(AvailableCars);
-    }, [AvailableCars])
+        if (AvailableCars?.data?.length) {
+            const newFilters = calculateUniqueValues(AvailableCars);
+            setFilters(newFilters);
+        }
+    }, [AvailableCars]);
     
-    useEffect(() => {
-        const applyFilters = () => {
-
-            if (!AvailableCars?.data) return; // Ensure data exists before filtering
     
-            const updatedData = AvailableCars.data.filter((item) => {
-                return Object.entries(selectedOptions).every(([field, value]) => {
-                    if (value.length === 0) {
-                        return true; // No filter applied for this field
-                    }
-    
-                    if (field === 'Anotation' && Array.isArray(item.Anotation)) {
-                        // Check if any value in `selectedOptions['Anotation']` matches `item.Anotation`
-                        return value.some((val) => item.Anotation.includes(val));
-                    }
-    
-                    if (field === 'Total') {
-                        // Ensure `value` is a number for comparison
-                        return item.Total > 0 && item.Total <= value; // Use `item.Total` (case-sensitive)
-                    }
-    
-                    // Handle other fields (general fields)
-                    return value.includes(item[field]);
-                });
-            });
-            console.log(updatedData)
-            setFilteredVehicles(updatedData); // Update the filtered data
-        };
-    
-        applyFilters();
-    }, [selectedOptions, AvailableCars, setFilteredVehicles]);
 
     
 
@@ -189,7 +142,7 @@ export const ReservationPage = () => {
             <div style={{display:'flex', flexWrap: 'wrap', marginTop: 20}}>
                 <div style={{width: '25%', float: 'left' }}>
                     {Object.keys(filters).length > 0 ? (
-                         <FiltersComponent />
+                         <FiltersComponent  filter={filters} />
                     ) : (
                         <p>No data available</p>
                     )}
@@ -226,9 +179,7 @@ export const ReservationPage = () => {
                                 </div>
                             </div>
                         ))
-
                         :
-                        
                         <p>No Vehicles to display yet</p>
 
                     }

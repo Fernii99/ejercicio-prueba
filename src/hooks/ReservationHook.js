@@ -24,115 +24,119 @@ export const ReservationHook = () => {
     });
 
     /***********************************************************
-    ************* Generation of the different filters **********
+    *********** Generation of the different filters  ***********
     ***********************************************************/
-    const calculateUniqueValues = ( AvailableCars) => { 
-        const fieldsToCheck = ['Total', 'Supplier', 'CarType', 'Capacidad', 'TipoTarifa', 'Anotation']; // Define the fields you want to check
-    const Filters = {}; // Initialize the Filters object
-
-    // Loop through the fields to initialize them in Filters
-    fieldsToCheck.forEach(field => {
-        Filters[field] = {}; // Each field gets its own sub-object
-    });
-
-    // Process each vehicle in AvailableCars
-    AvailableCars.data.forEach(vehicle => {
-        fieldsToCheck.forEach(field => {
-            if (vehicle[field] !== undefined) {
-                const value = vehicle[field];
-                if (!Filters[field][value]) {
-                    Filters[field][value] = false; // Initialize each unique value to false
-                }
-            }
+    const calculateUniqueValues = (AvailableCars) => {
+        const fieldsToCheck = ["Total", "Supplier", "CarType", "Capacidad", "TipoTarifa", "Anotation"];
+        const Filters = {};
+    
+        fieldsToCheck.forEach((field) => {
+            Filters[field] = {};
         });
-    });
-
-
-    return Filters;
+    
+        AvailableCars.data.forEach((vehicle) => {
+            fieldsToCheck.forEach((field) => {
+                if (vehicle[field] !== undefined) {
+                    const value = vehicle[field];
+    
+                    // Special handling for Anotation field
+                    if (field === "Anotation") {
+                        //Store the value of the first position of the array Anotations
+                        const anotationKey = value[0].trim();
+                        Filters[field][anotationKey] = Filters[field][anotationKey] || false;
+                    } else {
+                        Filters[field][value] = Filters[field][value] || false;
+                    }
+                }
+            });
+        });
+        setFilters(Filters);
+        return Filters;
     };
+
+
+    
+
+
+
+    /* ****************************************************************
+    ** HandleChange triggers on the change of the Office DropBoxes,  **
+    ** Date and Time Inputs, Before retrieveing the cars information **
+    ******************************************************************/
 
     const handleChange = (event) => {
         const { name, value } = event.target;
-    
+
         setCarsParameters((prevData) => {
             let updatedFilters = { ...prevData };
-    
-            // Handle 'OfiEnt' selection
+
             if (name === "OfiEnt") {
-                const selectedOffice = JSON.parse(value); // Parse the JSON string from the <select> option
+                const selectedOffice = JSON.parse(value);
                 updatedFilters = {
                     ...updatedFilters,
                     OfiEnt: selectedOffice.Codigo,
-                    Zona: selectedOffice.Zona,  // Assuming Zona is part of the office data
-                    Oficina: selectedOffice.Nombre
+                    Zona: selectedOffice.Zona,
+                    Oficina: selectedOffice.Nombre,
                 };
-    
-                // If devMismaOficina is true, synchronize OfiDev with OfiEnt
                 if (devMismaOficina) {
                     updatedFilters.OfiDev = selectedOffice.Codigo;
                 }
-            } 
-            // Handle 'OfiDev' selection
-            else if (name === "OfiDev") {
-                const selectedOffice = JSON.parse(value); // Parse the JSON string for OfiDev
+            } else if (name === "OfiDev") {
+                const selectedOffice = JSON.parse(value);
                 updatedFilters.OfiDev = selectedOffice.Codigo;
-            } 
-            // Handle other fields like FechaInicio, HoraInicio, etc.
-            else { 
+            } else {
                 updatedFilters[name] = value;
             }
             return updatedFilters;
         });
     };
 
-    const handleFilterChange = (event) => {
-        const { name, value, checked } = event.target;
+    /******************************************************************
+    **** HandlefilterChange on the change of the Office DropBoxes, ****
+    ** Date and Time Inputs, Before retrieveing the cars information **
+    ******************************************************************/
+    const handleCheckboxChange = (event) => {
+        const { name, value } = event.target;
     
-        setSelectedOptions((prev) => {
-            const updatedOptions = { ...prev };
+        console.log("Filters State:", filters);
+        console.log("Name:", name, "Value:", value);
+
+        console.log( "FILTERS INSIDE HANDLE CHECKBOX FIELDS");
+        console.log(filters)
     
-            if (name === "Total") {
-                // Convert the range value to a number
-                updatedOptions[name] = Number(value); // Parse as a number
-            } else if (checked) {
-                if (!updatedOptions[name]) {
-                    updatedOptions[name] = [];
-                }
-                if (!updatedOptions[name].includes(value)) {
-                    updatedOptions[name].push(value);
-                }
-            } else {
-                if (Array.isArray(updatedOptions[name])) {
-                    updatedOptions[name] = updatedOptions[name].filter((option) => option !== value);
-    
-                    if (updatedOptions[name].length === 0) {
-                        delete updatedOptions[name];
-                    }
-                }
-            }
-            console.log(updatedOptions)
-            return updatedOptions;
+        setFilters((prevFilters) => {
+            return {
+            ...prevFilters,
+            [name]: {
+                ...prevFilters[name],
+                [String(value)]: !prevFilters[name][value], // Ensure string key
+            },
+            };
         });
     };
 
-    useEffect( () => { 
-        console.log("FILTERS UPDATED")
-        console.log(filters)
-    }, [filters])
-    
+
+
+    useEffect(() => {
+        console.log("Filters updated, USEEFFECT FILTERS DEPENDENCY:", filters);
+    }, [filters]);   
+
+    useEffect(() => {     
+        console.log("Selected options updated:", selectedOptions);
+    }, [selectedOptions]);
 
     return {
        filters,
        setFilters,
        calculateUniqueValues,
-       handleFilterChange,
        setSelectedOptions,
        selectedOptions,
        handleChange,
        carsParameters,
        setCarsParameters,
        devMismaOficina,
-       setDevMismaOficina
+       setDevMismaOficina, 
+       handleCheckboxChange,
     };
 
-}
+} 
