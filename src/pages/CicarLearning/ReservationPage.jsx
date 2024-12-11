@@ -9,16 +9,13 @@ import { ReservationHook } from '../../hooks/ReservationHook';
 
 export const ReservationPage = () => {
 
-    const { filters, setFilters, selectedOptions, calculateUniqueValues, handleChange, carsParameters, setCarsParameters, devMismaOficina, setDevMismaOficina } = ReservationHook();
+    const { calculateUniqueValues, handleChange, carsParameters, devMismaOficina, getFilteredVehicles } = ReservationHook();
 
     const navigate = useNavigate();
 
-    const [filtersValues, setFiltersValues ] = useState([]);
-
-    const [filteredVehicles, setFilteredVehicles ] = useState(null);
+    const [ filters, setFilters ] = useState({});
+    const [ vehiclesData, setVehiclesData ] = useState([]);
     
-    
-
     const {isLoading, error, data} = useQuery({
         queryKey: ["zoneData"],
         queryFn: async () => {
@@ -43,45 +40,29 @@ export const ReservationPage = () => {
                     'Content-Type': 'application/json',
                 },
             });
+            console.log("response.data")
+            console.log(response.data.data)
+            setVehiclesData(response.data.data)
             return response.data;
         },
-
         enabled: false, 
     });
 
     /***********************************************************
     ************* Generation of the different filters **********
     ***********************************************************/
-    useEffect(() => {
-        if (!isLoading && AvailableCars) {
-            const uniqueValuesArray = calculateUniqueValues(AvailableCars);
-    
-            console.log('Unique Values:', uniqueValuesArray); // Debugging
-            setFilters(uniqueValuesArray); // State update
-        }
-    }, [isLoading, AvailableCars]);
+        useEffect(() => {
+            if (!isLoading && AvailableCars) {
+                const uniqueValuesArray = calculateUniqueValues(AvailableCars);
 
-
+                setFilters(uniqueValuesArray); // State update
+            }
+        }, [isLoading, AvailableCars]);
     /***********************************************************
     ******** End of Generation of the different filters ********
     ***********************************************************/
-    useEffect(() => {
-        console.log("FILTERS UPDATED RESERVATION PAGE")
-        console.log(filters)
-    }, [filters])
-
-    useEffect(() => {
-        if (AvailableCars?.data?.length) {
-            const newFilters = calculateUniqueValues(AvailableCars);
-            setFilters(newFilters);
-        }
-    }, [AvailableCars]);
-    
     
 
-    
-
-    const filteredResults = filteredVehicles || [];
 
     //LAS STEP - MAKE A RESERVATION OF A VEHICLE (MOVE TO NEXT SCREEN)
     const handleReservationClick = (model) => {
@@ -91,6 +72,17 @@ export const ReservationPage = () => {
     }
 
 
+    useEffect(() => {
+        if(AvailableCars && filters != {} ){
+            const vehicles = getFilteredVehicles(AvailableCars.data, filters);
+            setVehiclesData(vehicles);
+        }
+    }, [filters])
+
+    useEffect(() => {
+        console.log("vehiclesDataaaaa")
+        console.log(vehiclesData)
+    }, [vehiclesData])
 
     //COMPROBATIONS OF DATA IS RETRIVED ON THE FIRST LOAD OR IF THERE IS AN ERROR OR SOMETHING
     if( isLoading ) {
@@ -100,7 +92,6 @@ export const ReservationPage = () => {
     if( error ) {
         return console.log(error)
     }
-
 
     return (
         <>
@@ -142,14 +133,14 @@ export const ReservationPage = () => {
             <div style={{display:'flex', flexWrap: 'wrap', marginTop: 20}}>
                 <div style={{width: '25%', float: 'left' }}>
                     {Object.keys(filters).length > 0 ? (
-                         <FiltersComponent  filter={filters} />
+                        <FiltersComponent filters={filters} setFilters={setFilters} />
                     ) : (
                         <p>No data available</p>
                     )}
                 </div>
                 <div style={{width: '75%', display: 'flex', flexWrap: 'wrap', gap: 5}}>
-                    {filteredResults  && !isCarsLoading && !isCarsError ?
-                        filteredResults.map(modelo => (
+                    {vehiclesData != [] ?
+                        vehiclesData.map( modelo => (
                             modelo.Status === "Available" &&
                             <div style={{width: '100%',  border: '1px solid white', marginBottom: '5px', display: 'flex', flexDirection: 'column', alignItems: 'start', padding: '5px' }}>
                                 <h4>{modelo.Nombre} | Vendedor: {modelo.Supplier}</h4>
@@ -172,8 +163,8 @@ export const ReservationPage = () => {
                                             ))}
                                         </div>
                                         <div>
-                                            <p>Precio total, tasas incluidas: {modelo.Total}€</p>
-                                        </div>
+                                            <p> Precio total, tasas incluidas: {modelo.Total}€ </p>
+                                        </div> 
                                             <button onClick={ () => handleReservationClick(modelo) }>{modelo.Status}</button>
                                     </div>
                                 </div>
@@ -181,7 +172,6 @@ export const ReservationPage = () => {
                         ))
                         :
                         <p>No Vehicles to display yet</p>
-
                     }
                 </div>
             </div>

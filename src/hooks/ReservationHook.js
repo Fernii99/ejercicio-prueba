@@ -1,10 +1,7 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 
 
 export const ReservationHook = () => { 
-
-    const [filters, setFilters] = useState({});
-    const [selectedOptions, setSelectedOptions ] = useState([]);
 
     const [devMismaOficina, setDevMismaOficina] = useState(true);
 
@@ -22,6 +19,8 @@ export const ReservationHook = () => {
         "DevHotel": "",
         "Oficina": "",
     });
+
+    const [filteredVehicles, setFilteredVehicles ] = useState(null);
 
     /***********************************************************
     *********** Generation of the different filters  ***********
@@ -50,20 +49,13 @@ export const ReservationHook = () => {
                 }
             });
         });
-        setFilters(Filters);
         return Filters;
     };
-
-
-    
-
-
 
     /* ****************************************************************
     ** HandleChange triggers on the change of the Office DropBoxes,  **
     ** Date and Time Inputs, Before retrieveing the cars information **
     ******************************************************************/
-
     const handleChange = (event) => {
         const { name, value } = event.target;
 
@@ -91,52 +83,68 @@ export const ReservationHook = () => {
         });
     };
 
-    /******************************************************************
-    **** HandlefilterChange on the change of the Office DropBoxes, ****
-    ** Date and Time Inputs, Before retrieveing the cars information **
-    ******************************************************************/
-    const handleCheckboxChange = (event) => {
-        const { name, value } = event.target;
-    
-        console.log("Filters State:", filters);
-        console.log("Name:", name, "Value:", value);
 
-        console.log( "FILTERS INSIDE HANDLE CHECKBOX FIELDS");
-        console.log(filters)
-    
-        setFilters((prevFilters) => {
-            return {
-            ...prevFilters,
-            [name]: {
-                ...prevFilters[name],
-                [String(value)]: !prevFilters[name][value], // Ensure string key
-            },
-            };
-        });
+    /******************************************************************
+    ** Triggers when a filter is changed and finds the vehicles that **
+    *** match the values of the fields with the ones of the fields ****
+    ******************************************************************/
+    const getFilteredVehicles = (vehicles, filters) => {
+
+        console.log("GET FILTERED VEHICLES TRIGGERED")
+        console.log(filters);
+        
+        return vehicles.filter(vehicle => {
+            return (
+              Object.entries(filters.Supplier).some(([supplier, isChecked]) => {
+                if (isChecked && vehicle.Supplier === supplier) {
+                  
+                  return true; // Return true instead of vehicle
+                }
+                return false;
+              })||
+          
+              Object.entries(filters.CarType).some(([carType, isChecked]) => {
+                if (isChecked && vehicle.CarType === carType) {
+                  return true;
+                }
+                return false;
+              }) ||
+          
+              Object.entries(filters.Capacidad).some(([capacidad, isChecked]) => {
+                if (isChecked && vehicle.Capacidad === capacidad) {
+                  return true;
+                }
+                return false;
+              }) ||
+          
+              Object.entries(filters.TipoTarifa).some(([tipoTarifa, isChecked]) => {
+                if (isChecked && vehicle.TipoTarifa === tipoTarifa) {
+                  
+                  return true;
+                }
+                return false;
+              }) ||
+          
+              Object.entries(filters.Anotation).some(([anotation, isChecked]) => {
+                if (isChecked && vehicle.Anotation === anotation) {
+                  return true;
+                }
+                return false;
+              })
+            );
+          });
     };
 
-
-
-    useEffect(() => {
-        console.log("Filters updated, USEEFFECT FILTERS DEPENDENCY:", filters);
-    }, [filters]);   
-
-    useEffect(() => {     
-        console.log("Selected options updated:", selectedOptions);
-    }, [selectedOptions]);
-
     return {
-       filters,
-       setFilters,
-       calculateUniqueValues,
-       setSelectedOptions,
-       selectedOptions,
-       handleChange,
-       carsParameters,
-       setCarsParameters,
-       devMismaOficina,
-       setDevMismaOficina, 
-       handleCheckboxChange,
+        filteredVehicles,
+        setFilteredVehicles,
+        calculateUniqueValues,
+        handleChange,
+        carsParameters,
+        setCarsParameters,
+        devMismaOficina,
+        setDevMismaOficina,
+        getFilteredVehicles,
     };
 
 } 
