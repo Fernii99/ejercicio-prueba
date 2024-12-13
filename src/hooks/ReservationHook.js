@@ -90,8 +90,14 @@ export const ReservationHook = () => {
     ******************************************************************/
     const getFilteredVehicles = (vehicles, filters) => {
 
-        console.log("GET FILTERED VEHICLES TRIGGERED")
-        console.log(filters);
+        const areAllFiltersUnchecked = Object.values(filters).every(filterGroup => 
+          Object.values(filterGroup).every(isChecked => !isChecked)
+        );
+
+        // If all filters are unchecked, return all vehicles
+        if (areAllFiltersUnchecked) {
+            return vehicles;
+        }
         
         return vehicles.filter(vehicle => {
             return (
@@ -119,7 +125,6 @@ export const ReservationHook = () => {
           
               Object.entries(filters.TipoTarifa).some(([tipoTarifa, isChecked]) => {
                 if (isChecked && vehicle.TipoTarifa === tipoTarifa) {
-                  
                   return true;
                 }
                 return false;

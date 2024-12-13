@@ -21,15 +21,13 @@ export const FiltersComponent = ({filters, setFilters}) => {
           });
     };
 
-    
-
   return( 
     <div>
       <h2>Filter Options</h2>
         <div>
           <h3>Supplier</h3>
           { filters.Supplier &&
-          Object.entries(filters.Supplier).map(([supplier, value]) => (
+            Object.entries(filters.Supplier).map(([supplier, value]) => (
               <label key={supplier}>
                 <input
                   type="checkbox"
@@ -47,18 +45,19 @@ export const FiltersComponent = ({filters, setFilters}) => {
       <div>
         <h3>Car Type</h3>
         { filters.CarType &&
-        Object.entries(filters.CarType).map(([carType, value]) => (
-          <label key={carType}>
-            <input
-              type="checkbox"
-              name="CarType"
-              value={carType}
-              checked={value}
-              onChange={(event) => handleCheckboxChange(event)}
-            />
-            {carType}
-          </label>
-        ))}
+          Object.entries(filters.CarType).map(([carType, value]) => (
+            <label key={carType}>
+              <input
+                type="checkbox"
+                name="CarType"
+                value={carType}
+                checked={value}
+                onChange={(event) => handleCheckboxChange(event)}
+              />
+              {carType}
+            </label>
+          ))
+        }
       </div>
 
       <div>
@@ -80,7 +79,7 @@ export const FiltersComponent = ({filters, setFilters}) => {
 
       <div>
         <h3>Tipo Tarifa</h3>
-        {filters.TipoTarifa &&
+        { filters.TipoTarifa &&
          Object.entries(filters.TipoTarifa).map(([tarifa, value]) => (
           <label key={tarifa}>
             <input
@@ -98,20 +97,19 @@ export const FiltersComponent = ({filters, setFilters}) => {
        <div>
         <h3>Tipo Tarifa</h3>
         { filters.Anotation &&
-         Object.entries(filters.Anotation).map(([anotation, value]) => (
-            <label key={anotation}>
-              <input
-                type="checkbox"
-                name="Anotation"
-                value={anotation}
-                checked={value}
-                onChange={(event) => handleCheckboxChange(event)}
-              />
-              {anotation}
-            </label>
-        ))
-        
-      }
+          Object.entries(filters.Anotation).map(([anotation, value]) => (
+              <label key={anotation}>
+                <input
+                  type="checkbox"
+                  name="Anotation"
+                  value={anotation}
+                  checked={value}
+                  onChange={(event) => handleCheckboxChange(event)}
+                />
+                {anotation}
+              </label>
+          ))
+        }
       </div>  
     </div>
   )
