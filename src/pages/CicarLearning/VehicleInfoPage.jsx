@@ -1,7 +1,7 @@
 import React from 'react'
 import { useLocation } from 'react-router-dom';
 
-export const VehicleInfoPage = () => {
+export const VehicleInfoPage = (carsParameters) => {
 
     const location = useLocation();
     const { modelo, fechaInicio, fechaFin } = location.state || {};

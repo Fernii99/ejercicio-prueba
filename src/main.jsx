@@ -20,6 +20,7 @@ import { CharactersPage } from './pages/CharactersPage.jsx';
 import { CicarPage } from './pages/CicarLearning/CicarPage.jsx';  
 import { ReservationPage } from './pages/CicarLearning/ReservationPage.jsx';
 import { VehicleInfoPage } from './pages/CicarLearning/VehicleInfoPage.jsx';
+import { PaymentsPage } from './pages/Payments/PaymentsPage.jsx';
   const router = createBrowserRouter([
     {
       path: "/",
@@ -56,6 +57,10 @@ import { VehicleInfoPage } from './pages/CicarLearning/VehicleInfoPage.jsx';
     {
       path: "/characters",
       element: <CharactersPage />,
+    },
+    {
+      path: "/payments",
+      element: <PaymentsPage />,
     },
   ]);
 

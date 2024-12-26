@@ -63,7 +63,7 @@ export const ReservationPage = () => {
     /***********************************************************
     ******** End of Generation of the different filters ********
     ***********************************************************/
-    
+
     useEffect(() => {
         if(AvailableCars && filters != {} ){
             const vehicles = getFilteredVehicles(AvailableCars.data, filters);
@@ -75,6 +75,13 @@ export const ReservationPage = () => {
         console.log("vehiclesDataaaaa")
         console.log(vehiclesData)
     }, [vehiclesData])
+
+    //LAS STEP - MAKE A RESERVATION OF A VEHICLE (MOVE TO NEXT SCREEN)
+    const handleReservationClick = (model, carsParameters) => {
+        const fechaInicio = `${carsParameters.FechaInicio}  ${carsParameters.HoraInicio}`
+        const fechaFin = `${carsParameters.FechaFin}  ${carsParameters.HoraFin}`
+        navigate('/reservation2', { state: { modelo: model, fechaInicio: fechaInicio, fechaFin: fechaFin }})
+    }
 
 
     //COMPROBATIONS OF DATA IS RETRIVED ON THE FIRST LOAD OR IF THERE IS AN ERROR OR SOMETHING
@@ -101,7 +108,7 @@ export const ReservationPage = () => {
                         <p></p>
                     )}
                 </div>
-                <VehicleComponent vehiclesData={vehiclesData} AvailableCars={AvailableCars}/>
+                <VehicleComponent vehiclesData={vehiclesData} AvailableCars={AvailableCars} carsParameters={carsParameters} handleReservationClick={handleReservationClick} />
             </div>
         </>
     )

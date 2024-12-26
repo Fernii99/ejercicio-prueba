@@ -1,17 +1,10 @@
-import React from 'react'
 
-export const VehicleComponent = ({vehiclesData, AvailableCars}) => {
-
-    //LAS STEP - MAKE A RESERVATION OF A VEHICLE (MOVE TO NEXT SCREEN)
-        const handleReservationClick = (model) => {
-            const fechaInicio = `${carsParameters.FechaInicio}  ${carsParameters.HoraInicio}`
-            const fechaFin = `${carsParameters.FechaFin}  ${carsParameters.HoraFin}`
-            navigate('/reservation2', { state: { modelo: model, fechaInicio: fechaInicio, fechaFin: fechaFin }})
-        }
+export const VehicleComponent = ({vehiclesData, AvailableCars, handleReservationClick}) => {
 
   return (
     <div style={{width: '75%', display: 'flex', flexWrap: 'wrap', gap: 5}}>
-        { vehiclesData == [] || AvailableCars != undefined  ?
+        <h1>VEHICLES LIST</h1>
+        { vehiclesData != [] || AvailableCars != undefined  ?
             vehiclesData.map( modelo => (
                 modelo.Status === "Available" &&
                 <div  style={{width: '100%',  border: '1px solid white', marginBottom: '5px', display: 'flex', flexDirection: 'column', alignItems: 'start', padding: '5px' }}>
@@ -37,7 +30,7 @@ export const VehicleComponent = ({vehiclesData, AvailableCars}) => {
                             <div>
                                 <p> Precio total, tasas incluidas: {modelo.Total}€ </p>
                             </div> 
-                                <button  onClick={ () => handleReservationClick(modelo) }>{modelo.Status}</button>
+                                <button onClick={ () => handleReservationClick(modelo) }>Realizar Reserva</button>
                         </div>
                     </div>
                 </div>
