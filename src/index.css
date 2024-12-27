@@ -139,7 +139,13 @@ h2 {
 
 /* Style for weekends */
 .day.payment {
-  background-color: navy; /* Light yellow */
+  background-color: rgb(13, 13, 146); /* Light yellow */
+  color: white;
+  font-weight: bold;
+}
+
+.day.paymentsDay {
+  background-color: rgb(3, 124, 68); /* Light yellow */
   color: white;
   font-weight: bold;
 }

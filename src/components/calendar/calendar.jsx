@@ -18,7 +18,7 @@ const getFirstDayOfMonth = (year, month) => {
   return firstDay === 0 ? 6 : firstDay - 1; // Convert Sunday (0) to 6, Monday (1) to 0
 };
 
-export const Calendar = ({ year, festivos = [], date }) => {
+export const Calendar = ({ year, festivos = [], date, paymentDay }) => {
 
   const currentYear = year;
 
@@ -49,17 +49,14 @@ export const Calendar = ({ year, festivos = [], date }) => {
                 const dayNumber = dayIndex + 1;
                 const dateString = `${currentYear}/${String(monthIndex + 1).padStart(2, '0')}/${String(dayNumber).padStart(2, '0')}`;
                 const dayString = `${currentYear}-${String(monthIndex + 1).padStart(2, '0')}-${String(dayNumber).padStart(2, '0')}`;
-                const isMarked = festivos != [] && festivos.includes(dateString) ;
-                
-                
+                const isMarked = festivos != [] && festivos.includes(dateString);
                 const isPayment = date != "" && date === dayString;
-                
+                const payment = paymentDay && paymentDay[0] === dateString;
                 const dayOfWeek = (firstDay + dayIndex) % 7;
                 const isWeekend = dayOfWeek === 5 || dayOfWeek === 6; // Saturday (5) and Sunday (6)
                 return (
-                  <div
-                    key={dayIndex}
-                    className={` day ${isMarked ? 'marked' : ''} ${isWeekend ? 'weekend' : ''} ${isPayment ? 'payment' : ''} `}
+                  <div key={dayIndex}
+                    className={` day ${isMarked ? 'marked' : ''} ${payment ? 'paymentsDay' : ''} ${isWeekend ? 'weekend' : ''} ${isPayment ? 'payment' : ''} `}
                   >
                     {dayNumber}
                   </div>

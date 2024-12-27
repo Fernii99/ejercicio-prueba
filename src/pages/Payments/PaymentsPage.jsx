@@ -1,156 +1,143 @@
-import React, { useEffect, useState } from 'react'
-import { useQuery } from '@tanstack/react-query'
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { Calendar } from '../../components/calendar/calendar';
 
-
-  
-  
-
 export const PaymentsPage = () => {
+  const [paymentsDays, setPaymentsDays] = useState({ year: '', day: '' });
+  const [monthInfo, setMonthInfo] = useState({ month: '', daysInMonth: 0 });
+  const [petitionResponse, setPetitionResponse] = useState({});
+  const [diasFestivos, setDiasFestivos] = useState(0);
+  const [festivos, setFestivos] = useState([]);
 
-
-    const [ paymentsDays, setPaymentsDays ] = useState({
-        year: "",
-        day: ""
-    });
-    const [monthInfo, setMonthInfo] = useState({ month: '', daysInMonth: 0 });
-    const [festivos, setFestivos] = useState([]);
-
-    const [petitionResponse, setPetitionResponse] = useState({})
-    const [diasFestivos, setDiasFestivos] = useState({})
-
-    const fetchPaymentDays = async (e) => {
-        e.preventDefault();
-    
-        try {
-            const response = await axios.get('http://localhost:8000/api/verifyPayments', {
-                params: paymentsDays,
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-            });
-    
-            console.log(response.data)
-            // Handle successful response
-            setPetitionResponse(response.data);
-            console.log(response.data)
-            setFestivos(response.data.festivos)
-        } catch (error) {
-            // Handle error
-            if (error.response) {
-                console.log(error.response.data)
-                setPetitionResponse(error.response);
-            } else {
-                alert('Network error');
-            }
-        }
-    };
-
-    useEffect( () => { 
-        // Fecha de inicio
-        const fecha1 = new Date(paymentsDays.day);
-
-        // Fecha de fin
-        const fecha2 = new Date(petitionResponse.noFestivos);
-
-        // Calcular la diferencia en milisegundos
-        const diferenciaMilisegundos = fecha2 - fecha1;
-
-        // Convertir la diferencia de milisegundos a días
-        const diferenciaDias = diferenciaMilisegundos / (1000 * 60 * 60 * 24);
-
-        setDiasFestivos(diferenciaDias);
-    }, [petitionResponse])
-   
-
-    const handleParametersChange = (e) => {
-
-        const { name, value } = e.target;
-        
-        console.log(name);
-        console.log(value)
-
-        if(name === "day") {
-            // Extract year and month
-            const date = new Date(value);
-            const year = date.getFullYear();
-            const month = date.getMonth(); // Month is 0-indexed (0 = January, 1 = February, etc.)
-
-            // Get the number of days in the month
-            const daysInMonth = new Date(year, month + 1, 0).getDate();
-
-            // Set month info state
-            const monthNames = [
-                'January', 'February', 'March', 'April', 'May', 'June',
-                'July', 'August', 'September', 'October', 'November', 'December'
-            ];
-
-            setMonthInfo({ month: monthNames[month], daysInMonth });
-        }
-
-        setPaymentsDays((prevData) => {
-            let updatedDays = { ...prevData };
-            updatedDays[name] = value; // Update the field with the new value
-            return updatedDays; // Ensure the updated object is returned
-        });
-        
+  // Fetch payment days from the API
+  const fetchPaymentDays = async (e) => {
+    e.preventDefault();
+    try {
+      const { data } = await axios.get('http://localhost:8000/api/verifyPayments', {
+        params: paymentsDays,
+        headers: { 'Content-Type': 'application/json' },
+      });
+      setPetitionResponse(data);
+      setFestivos(data.festivos || []);
+    } catch (error) {
+      console.error(error.response?.data || 'Network error');
     }
+  };
+
+  // Calculate difference in days
+  useEffect(() => {
+    if (paymentsDays.day && petitionResponse.noFestivos) {
+      const startDate = new Date(paymentsDays.day);
+      const nextPaymentDate = new Date(petitionResponse.noFestivos);
+      const differenceInDays = (nextPaymentDate - startDate) / (1000 * 60 * 60 * 24);
+      setDiasFestivos(Math.round(differenceInDays));
+    }
+  }, [petitionResponse, paymentsDays.day]);
+
+  // Handle form inputs and update state
+  const handleParametersChange = ({ target: { name, value } }) => {
+    if (name === 'day') {
+      const date = new Date(value);
+      const year = date.getFullYear();
+      const month = date.getMonth();
+      const daysInMonth = new Date(year, month + 1, 0).getDate();
+      const monthNames = [
+        'January', 'February', 'March', 'April', 'May', 'June',
+        'July', 'August', 'September', 'October', 'November', 'December',
+      ];
+      setMonthInfo({ month: monthNames[month], daysInMonth });
+    }
+    setPaymentsDays((prev) => ({ ...prev, [name]: value }));
+  };
+
+  
 
   return (
-        <div style={{display: 'flex', flexDirection:'column', alignItems: 'center', justifyContent: 'center',}}>
-            <h1>Calcula los dias proximos al día de pago</h1>
+    <div style={styles.container}>
+      <h1>Calcula los días próximos al día de pago</h1>
+      <form style={styles.form}>
+        <label htmlFor="year" style={{ fontWeight: 'bold' }}>Año a calcular:</label>
+        <select
+          id="year"
+          name="year"
+          value={paymentsDays.year}
+          required
+          style={{ marginBottom: 20, height: 30 }}
+          onChange={handleParametersChange}
+        >
+          <option value="">Selecciona Año</option>
+          {[...Array(7)].map((_, i) => {
+            const year = 2024 + i;
+            return <option key={year} value={year}>{year}</option>;
+          })}
+        </select>
 
-            <form style={{display: 'flex', flexDirection:'column', alignContent: 'center', justifyContent: 'center'}} >
+        <label htmlFor="day" style={{ fontWeight: 'bold' }}>Selecciona Fecha:</label>
+        <input
+          type="date"
+          id="day"
+          name="day"
+          required
+          value={paymentsDays.day}
+          style={{ marginBottom: 20, height: 30 }}
+          onChange={handleParametersChange}
+        />
+        <button style={styles.button} type="submit" onClick={fetchPaymentDays}>Calcular Festivos</button>
+      </form>
 
-                <label htmlFor="year" style={{ fontWeight: 'bold'}}>Año a calcular:</label>
-                    <select id="year" name="year" value={paymentsDays.year} required style={{marginBottom: 20, height: 30}} onChange={(e) => handleParametersChange(e)} >
-                        <option value="">Selecciona Año</option>
-                        <option value="2025">2025</option>
-                        <option value="2026">2026</option>
-                        <option value="2027">2027</option>
-                        <option value="2028">2028</option>
-                        <option value="2029">2029</option>
-                        <option value="2030">2030</option>
-                    </select>
-                <label htmlFor="day" style={{ fontWeight: 'bold'}}>Selecciona Fecha:</label>
-                <input type="date" id="day"  name="day" required value={paymentsDays.day} style={{marginBottom: 20, height: 30}} onChange={(e) => handleParametersChange(e)}/>
+      {Object.keys(petitionResponse).length > 0 && (
+        <>
+          <div style={styles.card}>
+            <div style={{ display: 'flex', flexDirection: 'column', lineHeight: 0, alignItems: 'center', fontWeight: 'bold' }}>
+              <p style={{ textTransform: 'uppercase' }}>
+                <b>{petitionResponse.message}</b> {petitionResponse.noFestivos}<br />
+              </p>
+              <p style={{ textTransform: 'uppercase' }}>El próximo día no festivo es dentro de {diasFestivos} días</p>
+            </div>
 
-                <button style={{marginBottom:30 }} type="submit" value="Verify Payments" onClick={(e) => {fetchPaymentDays(e)}}> Calcular Festivos </button>
-
-            </form>
-            
-
-            { Object.keys(petitionResponse).length > 0 &&
-                <>
-                    <div style={{width: '100%', height: '135px', display: 'flex', flexDirection:'column', alignItems:'center', color: 'black', backgroundColor: '#f9f9f9', borderRadius: '10px' }}>
-                        <div style={{display: 'flex', flexDirection: 'column', lineHeight: 0, alignItems: 'center', fontWeight: 'bold'}}> 
-                            <p style={{textTransform: 'uppercase'}}><b>{petitionResponse.message}</b> {petitionResponse.noFestivos}<br/> </p>
-                            <p style={{textTransform: 'uppercase'}}> El proximo dia no festivo es dentro de {  Math.round(diasFestivos) } </p>
-                        </div>
-
-                        <div style={{display: 'flex', gap: 20, fontSize: 17}}> 
-                            <div style={{display: 'flex', alignItems: 'center'}}> 
-                                <p style={{width: '20px', height: '20px', backgroundColor: '#ff4d4d', marginRight: 5}}></p>
-                                <p>Festivos</p>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center'}}> 
-                                <p style={{width: '20px', height: '20px', backgroundColor: '#f0e68c', marginRight: 5}}></p>
-                                <p>Fin de Semana</p>
-                            </div>
-                            <div style={{display: 'flex', alignItems: 'center'}}> 
-                                <p style={{width: '20px', height: '20px', backgroundColor: 'navy', marginRight: 5}}></p>
-                                <p>Dia de Pago</p>
-                            </div>
-                        </div>
-                    </div>
-                    <Calendar year={paymentsDays.year} festivos={festivos} date={paymentsDays.day} />
-                </>
-            }
-
-
-        </div>
-  )
-}
+            <div style={styles.legend}>
+              {[
+                { color: '#ff4d4d', label: 'Festivos' },
+                { color: '#f0e68c', label: 'Fin de Semana' },
+                { color: 'navy', label: 'Día Seleccionado' },
+                { color: 'rgb(3, 124, 68)', label: 'Próximo Día de Pago' },
+              ].map(({ color, label }) => (
+                <div key={label} style={styles.legendItem}>
+                  <p style={{ ...styles.legendColor, backgroundColor: color }}></p>
+                  <p>{label}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+          <Calendar
+            year={paymentsDays.year}
+            festivos={festivos}
+            date={paymentsDays.day}
+            paymentDay={petitionResponse.noFestivos}
+          />
+        </>
+      )}
+    </div>
+  );
+};
 
 
+// Centralized styles
+const styles = {
+    container: { display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center' },
+    form: { display: 'flex', flexDirection: 'column', alignContent: 'center', justifyContent: 'center' },
+    button: { marginBottom: 30 },
+    card: {
+      width: '100%',
+      height: '135px',
+      display: 'flex',
+      flexDirection: 'column',
+      alignItems: 'center',
+      color: 'black',
+      backgroundColor: '#f9f9f9',
+      borderRadius: '10px',
+    },
+    legend: { display: 'flex', gap: 20, fontSize: 17 },
+    legendItem: { display: 'flex', alignItems: 'center' },
+    legendColor: { width: '20px', height: '20px', marginRight: 5 },
+  };
